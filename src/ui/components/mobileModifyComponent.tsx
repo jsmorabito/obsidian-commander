@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import t from "src/l10n";
 import { ObsidianIcon } from "src/util";
 import MobileModifyModal from "../mobileModifyModal";
@@ -13,9 +13,10 @@ export default function MobileModifyComponent({
 	plugin: CommanderPlugin;
 	modal: MobileModifyModal;
 }): h.JSX.Element {
+	const [, rerender] = useState(0);
 	useEffect(() => {
 		const update = (): void => {
-			this.forceUpdate();
+			rerender((n) => n + 1);
 		};
 		addEventListener("cmdr-icon-changed", update);
 		return () => removeEventListener("cmdr-icon-changed", update);
