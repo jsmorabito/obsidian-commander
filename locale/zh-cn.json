@@ -69,5 +69,9 @@
 	"Hide other Commands": "隐藏其余命令",
 	"Double click to enter custom value": "双击以添加自定义值",
 	"Choose custom spacing for Command Buttons": "为命令按钮选择自定义间距",
-	"Change the spacing between commands. You can set different values on mobile and desktop.": "改变命令之间的间距。你可以为移动和桌面设备设置不同的值。"
+	"Change the spacing between commands. You can set different values on mobile and desktop.": "改变命令之间的间距。你可以为移动和桌面设备设置不同的值。",
+	"Warning": "警告",
+	"As of Obsidian 0.16.0 you need to explicitly enable the View Header.": "从 Obsidian 0.16.0 开始，你需要显式启用标签页标题栏。启用后，需要重启 Obsidian 才能生效。",
+	"Open Appearance Settings": "打开外观设置",
+	"Explorer": "文件管理器"
 }
