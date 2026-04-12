@@ -20,7 +20,7 @@
 	"Double click to rename": "双击以重命名",
 	"This device": "该设备",
 	"Added by {{plugin_name}}.": "由{{plugin_name}}添加。",
-	"Warning: This is a checked Command, meaning it might not run under every circumstance.": "警告：这是一个受检的命令，这意味着它未必能在所以环境下运行。",
+	"Warning: This is a checked Command, meaning it might not run under every circumstance.": "警告：这是一个受检的命令，这意味着它未必能在所有环境下运行。",
 	"Move down": "向下移动",
 	"Move up": "向上移动",
 	"Change Mode (Currently: {{current_mode}})": "切换模式（当前：{{current_mode}}）",
