@@ -35,7 +35,7 @@
 		"codemirror6-themes": "^0.1.2",
 		"esbuild": "^0.25.0",
 		"esbuild-plugin-alias": "^0.2.1",
-		"esbuild-sass-plugin": "^3.3.1",
+		"esbuild-sass-plugin": "3.3.1",
 		"sass-embedded": "^1.71.1",
 		"node-fetch": "^3.3.0",
 		"npm-run-all": "^4.1.5",
