@@ -15,105 +15,112 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
-esbuild
-	.build({
-		banner: {
-			js: banner,
-		},
-		footer: {
-			js: "\n/* by phibr0 */",
-		},
-		entryPoints: ["src/main.ts"],
-		bundle: true,
-		external: [
-			"obsidian",
-			"electron",
-			"@codemirror/autocomplete",
-			"@codemirror/closebrackets",
-			"@codemirror/collab",
-			"@codemirror/commands",
-			"@codemirror/comment",
-			"@codemirror/fold",
-			"@codemirror/gutter",
-			"@codemirror/highlight",
-			"@codemirror/history",
-			"@codemirror/language",
-			"@codemirror/lint",
-			"@codemirror/matchbrackets",
-			"@codemirror/panel",
-			"@codemirror/rangeset",
-			"@codemirror/rectangular-selection",
-			"@codemirror/search",
-			"@codemirror/state",
-			"@codemirror/stream-parser",
-			"@codemirror/text",
-			"@codemirror/tooltip",
-			"@codemirror/view",
-			...builtins,
-		],
-		format: "cjs",
-		watch: !prod,
-		loader: {
-			".svg": "text",
-		},
-		target: "es2017",
-		logLevel: "info",
-		sourcemap: prod ? false : "inline",
-		minify: prod,
-		treeShaking: true,
-		outfile: "main.js",
-		jsx: "automatic",
-		plugins: [
-			alias({
-				react: require.resolve("preact/compat"),
-				"react-dom/test-utils": require.resolve("preact/test-utils"),
-				"react-dom": require.resolve("preact/compat"),
-				"react/jsx-runtime": require.resolve("preact/jsx-runtime"),
-			}),
-			sassPlugin(),
-			{
-				name: "Insert Tailwind Directives",
-				setup(build) {
-					build.onEnd(() => {
-						try {
-							appendFileSync(
-								"main.css",
-								"\n@tailwind components;\n@tailwind utilities;\n"
-							);
-						} catch (error) {
-							console.error(error);
-						}
-					});
-				},
-			},
-			{
-				name: "Move output",
-				setup(build) {
-					build.onEnd(() => {
-						setTimeout(
-							() => {
-								try {
-									copyFileSync(
-										"styles.css",
-										"../../vault/.obsidian/plugins/cmdr/styles.css"
-									);
-									copyFileSync(
-										"main.js",
-										"../../vault/.obsidian/plugins/cmdr/main.js"
-									);
-									copyFileSync(
-										"manifest.json",
-										"../../vault/.obsidian/plugins/cmdr/manifest.json"
-									);
-								} catch (error) {
-									console.error(error);
-								}
-							},
-							prod ? 5000 : 500
+const buildOptions = {
+	banner: {
+		js: banner,
+	},
+	footer: {
+		js: "\n/* by phibr0 */",
+	},
+	entryPoints: ["src/main.ts"],
+	bundle: true,
+	external: [
+		"obsidian",
+		"electron",
+		"@codemirror/autocomplete",
+		"@codemirror/closebrackets",
+		"@codemirror/collab",
+		"@codemirror/commands",
+		"@codemirror/comment",
+		"@codemirror/fold",
+		"@codemirror/gutter",
+		"@codemirror/highlight",
+		"@codemirror/history",
+		"@codemirror/language",
+		"@codemirror/lint",
+		"@codemirror/matchbrackets",
+		"@codemirror/panel",
+		"@codemirror/rangeset",
+		"@codemirror/rectangular-selection",
+		"@codemirror/search",
+		"@codemirror/state",
+		"@codemirror/stream-parser",
+		"@codemirror/text",
+		"@codemirror/tooltip",
+		"@codemirror/view",
+		...builtins,
+	],
+	format: "cjs",
+	loader: {
+		".svg": "text",
+	},
+	target: "es2017",
+	logLevel: "info",
+	sourcemap: prod ? false : "inline",
+	minify: prod,
+	treeShaking: true,
+	outfile: "main.js",
+	jsx: "automatic",
+	plugins: [
+		alias({
+			react: require.resolve("preact/compat"),
+			"react-dom/test-utils": require.resolve("preact/test-utils"),
+			"react-dom": require.resolve("preact/compat"),
+			"react/jsx-runtime": require.resolve("preact/jsx-runtime"),
+		}),
+		sassPlugin(),
+		{
+			name: "Insert Tailwind Directives",
+			setup(build) {
+				build.onEnd(() => {
+					try {
+						appendFileSync(
+							"main.css",
+							"\n@tailwind components;\n@tailwind utilities;\n"
 						);
-					});
-				},
+					} catch (error) {
+						console.error(error);
+					}
+				});
 			},
-		],
-	})
-	.catch(() => process.exit(1));
+		},
+		{
+			name: "Move output",
+			setup(build) {
+				build.onEnd(() => {
+					setTimeout(
+						() => {
+							try {
+								copyFileSync(
+									"styles.css",
+									"../../vault/.obsidian/plugins/cmdr/styles.css"
+								);
+								copyFileSync(
+									"main.js",
+									"../../vault/.obsidian/plugins/cmdr/main.js"
+								);
+								copyFileSync(
+									"manifest.json",
+									"../../vault/.obsidian/plugins/cmdr/manifest.json"
+								);
+							} catch (error) {
+								console.error(error);
+							}
+						},
+						prod ? 5000 : 500
+					);
+				});
+			},
+		},
+	],
+};
+
+if (prod) {
+	esbuild.build(buildOptions).catch(() => process.exit(1));
+} else {
+	// esbuild 0.17+ removed the `watch` build option in favour of a context API
+	esbuild
+		.context(buildOptions)
+		.then((ctx) => ctx.watch())
+		.catch(() => process.exit(1));
+}
