@@ -33,9 +33,10 @@
 		"builtin-modules": "^3.3.0",
 		"codemirror": "^6.0.1",
 		"codemirror6-themes": "^0.1.2",
-		"esbuild": "^0.15.16",
+		"esbuild": "^0.25.0",
 		"esbuild-plugin-alias": "^0.2.1",
-		"esbuild-sass-plugin": "^2.4.2",
+		"esbuild-sass-plugin": "^3.3.1",
+		"sass-embedded": "^1.71.1",
 		"node-fetch": "^3.3.0",
 		"npm-run-all": "^4.1.5",
 		"obsidian": "latest",
@@ -47,5 +48,22 @@
 		"array-move": "^4.0.0",
 		"canvas-confetti": "^1.6.0",
 		"preact": "^10.11.3"
+	},
+	"overrides": {
+		"ajv": "^6.14.0",
+		"brace-expansion": "^1.1.13",
+		"braces": "^3.0.3",
+		"cross-spawn": "^7.0.5",
+		"flatted": "^3.4.2",
+		"immutable": "^4.3.8",
+		"js-yaml": "^4.1.1",
+		"micromatch": "^4.0.8",
+		"minimatch": "^3.1.5",
+		"nanoid": "^3.3.8",
+		"picomatch": "^2.3.2",
+		"postcss": "^8.5.10",
+		"semver": "^7.5.2",
+		"word-wrap": "^1.2.4",
+		"yaml": "^1.10.3"
 	}
 }
