@@ -8,7 +8,7 @@ interface TextToolbarAPI {
 
 function getTextToolbarAPI(plugin: CommanderPlugin): TextToolbarAPI | undefined {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (plugin.app as any).plugins?.plugins?.["text-toolbar"]?.api;
+	return (plugin.app as any).plugins?.plugins?.["text-formatting-toolbar"]?.api;
 }
 
 export default class TextToolbarIntegrationManager extends CommandManagerBase {
