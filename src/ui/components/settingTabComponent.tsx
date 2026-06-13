@@ -113,6 +113,7 @@ export default function settingTabComponent({
 								await plugin.saveSettings();
 							}}
 						/>
+
 					</Fragment>
 				),
 			},
@@ -254,6 +255,7 @@ export default function settingTabComponent({
 					</CommandViewer>
 				),
 			},
+
 			{
 				name: Platform.isMobile ? "Mobile Toolbar" : "Toolbar",
 				tab: <AdvancedToolbarSettings plugin={plugin} />,

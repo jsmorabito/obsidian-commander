@@ -88,6 +88,13 @@ const buildOptions = {
 			name: "Move output",
 			setup(build) {
 				build.onEnd(() => {
+					// Always copy main.css → styles.css locally so Obsidian loads current styles
+					try {
+						copyFileSync("main.css", "styles.css");
+					} catch (error) {
+						console.error("Failed to copy main.css → styles.css:", error);
+					}
+
 					setTimeout(
 						() => {
 							try {
