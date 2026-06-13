@@ -14,6 +14,7 @@ import {
 	FileMenuCommandManager,
 	PageHeaderManager,
 	StatusBarManager,
+	TextToolbarIntegrationManager,
 } from "./manager/commands";
 import { Action, CommanderSettings } from "./types";
 import CommanderSettingTab from "./ui/settingTab";
@@ -36,6 +37,7 @@ export default class CommanderPlugin extends Plugin {
 		statusBar: StatusBarManager;
 		pageHeader: PageHeaderManager;
 		explorerManager: ExplorerManager;
+		textToolbarIntegration: TextToolbarIntegrationManager;
 	};
 
 	public async executeStartupMacros(): Promise<void> {
@@ -95,6 +97,7 @@ export default class CommanderPlugin extends Plugin {
 			statusBar: new StatusBarManager(this, this.settings.statusBar),
 			pageHeader: new PageHeaderManager(this, this.settings.pageHeader),
 			explorerManager: new ExplorerManager(this, this.settings.explorer),
+			textToolbarIntegration: new TextToolbarIntegrationManager(this, this.settings.textToolbarCommands),
 		};
 
 		this.addSettingTab(new CommanderSettingTab(this));
@@ -127,6 +130,9 @@ export default class CommanderPlugin extends Plugin {
 			injectIcons(this.settings.advancedToolbar, this);
 
 			this.executeStartupMacros();
+
+			// Push saved commands into the Text Toolbar plugin if it is installed
+			this.manager.textToolbarIntegration.reorder();
 		});
 	}
 

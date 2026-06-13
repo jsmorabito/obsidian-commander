@@ -33,6 +33,7 @@ export interface CommanderSettings {
 	pageHeader: CommandIconPair[];
 	explorer: CommandIconPair[];
 	macros: Macro[];
+	textToolbarCommands: CommandIconPair[];
 	hide: {
 		statusbar: string[];
 		leftRibbon: string[];

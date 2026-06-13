@@ -11,6 +11,7 @@ import CommandViewer from "./commandViewerComponent";
 import { LeftRibbonHider, StatusbarHider } from "./hidingViewer";
 import MacroViewer from "./MacroViewer";
 import { SliderComponent, ToggleComponent } from "./settingComponent";
+import TextToolbarIntegrationManager from "src/manager/commands/textToolbarIntegrationManager";
 
 export default function settingTabComponent({
 	plugin,
@@ -113,6 +114,7 @@ export default function settingTabComponent({
 								await plugin.saveSettings();
 							}}
 						/>
+
 					</Fragment>
 				),
 			},
@@ -254,6 +256,20 @@ export default function settingTabComponent({
 					</CommandViewer>
 				),
 			},
+
+			...(TextToolbarIntegrationManager.isAvailable(plugin)
+				? [
+					{
+						name: "Text Toolbar",
+						tab: (
+							<CommandViewer
+								manager={plugin.manager.textToolbarIntegration}
+								plugin={plugin}
+							/>
+						),
+					},
+				]
+				: []),
 			{
 				name: Platform.isMobile ? "Mobile Toolbar" : "Toolbar",
 				tab: <AdvancedToolbarSettings plugin={plugin} />,
