@@ -1,4 +1,5 @@
 import ExplorerManager from "./explorerManager";
+import TextToolbarIntegrationManager from "./textToolbarIntegrationManager";
 import {
 	EditorMenuCommandManager,
 	FileMenuCommandManager,
@@ -12,6 +13,7 @@ export {
 	FileMenuCommandManager,
 	PageHeaderManager,
 	StatusBarManager,
+	TextToolbarIntegrationManager,
 	TitleBarManager,
 	ExplorerManager,
 };
