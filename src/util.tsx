@@ -144,16 +144,17 @@ export function updateMacroCommands(plugin: CommanderPlugin): void {
 	);
 	for (const command of oldCommands) {
 		//@ts-ignore
-		app.commands.removeCommand(command);
+		plugin.app.commands.removeCommand(command);
 	}
 
 	const macros = plugin.settings.macros;
-	for (const [idx, macro] of Object.entries(macros)) {
+	for (const [idx, macro] of macros.entries()) {
 		plugin.addCommand({
 			id: `macro-${idx}`,
 			name: macro.name,
+			icon: macro.icon,
 			callback: () => {
-				plugin.executeMacro(parseInt(idx));
+				plugin.executeMacro(Number(idx));
 			},
 		});
 	}
@@ -195,7 +196,7 @@ export function injectIcons(
 		if (command) {
 			command.icon = mapped.iconID;
 		} else {
-			settings.mappedIcons.remove(mapped);
+			settings.mappedIcons = settings.mappedIcons.filter(m => m !== mapped);
 		}
 	});
 }
