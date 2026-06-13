@@ -6,6 +6,15 @@
 	}
 }
 
+// Fix tooltip positioning for status bar items
+// Obsidian's tooltip system uses data-tooltip-position to determine tooltip placement
+// For status bar items at the bottom, we ensure tooltips appear above with proper spacing
+.status-bar-item.cmdr[data-tooltip-position="top"] {
+	// Ensure proper positioning context for tooltip calculation
+	position: relative;
+}
+
+
 .cmdr-removing {
 	transform: translateX(100%);
 	z-index: 0;
