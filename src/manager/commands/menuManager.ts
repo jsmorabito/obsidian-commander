@@ -32,15 +32,16 @@ abstract class Base extends CommandManagerBase {
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	public reorder(): void {}
 
-	// eslint-disable-next-line no-unused-vars
 	protected addRemovableCommand(
-		this: (item: MenuItem) => void,
+		// eslint-disable-next-line no-unused-vars
+		this: (_item: MenuItem) => void,
 		command: Command,
 		cmdPair: CommandIconPair,
 		plugin: CommanderPlugin,
 		menu: Menu,
 		commandList: CommandIconPair[]
-	): (item: MenuItem) => void {
+	// eslint-disable-next-line no-unused-vars
+	): (_item: MenuItem) => void {
 		return (item: MenuItem) => {
 			item.dom.addClass("cmdr");
 			item.dom.style.color =

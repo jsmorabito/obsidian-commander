@@ -160,7 +160,7 @@ export function updateMacroCommands(plugin: CommanderPlugin): void {
 	}
 }
 
-export function updateStyles(settings: AdvancedToolbarSettings) {
+export function updateStyles(settings: AdvancedToolbarSettings): void {
 	const { classList: c, style: s } = document.body;
 	s.setProperty("--at-button-height", (settings.rowHeight ?? 48) + "px");
 	s.setProperty("--at-button-width", (settings.buttonWidth ?? 48) + "px");
@@ -173,7 +173,7 @@ export function updateStyles(settings: AdvancedToolbarSettings) {
 	c.toggle("AT-no-toolbar", settings.rowCount === 0);
 }
 
-export function removeStyles() {
+export function removeStyles(): void {
 	const { classList: c, style: s } = document.body;
 	s.removeProperty("--at-button-height");
 	s.removeProperty("--at-button-width");
@@ -190,7 +190,7 @@ export function removeStyles() {
 export function injectIcons(
 	settings: AdvancedToolbarSettings,
 	plugin: CommanderPlugin
-) {
+): void {
 	settings.mappedIcons.forEach((mapped) => {
 		const command = plugin.app.commands.commands[mapped.commandID];
 		if (command) {

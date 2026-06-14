@@ -1,4 +1,3 @@
-import exp from "constants";
 import { Menu, setIcon, WorkspaceLeaf } from "obsidian";
 import t from "src/l10n";
 import CommanderPlugin from "src/main";
@@ -81,7 +80,7 @@ export default class ExplorerManager extends CommandManagerBase {
 		await this.plugin.saveSettings();
 	}
 
-	private buttonExists(leaf: WorkspaceLeaf, action: CommandIconPair) {
+	private buttonExists(leaf: WorkspaceLeaf, action: CommandIconPair): boolean {
 		return [
 			...leaf.view.containerEl.querySelectorAll(
 				"div.nav-buttons-container > .cmdr.clickable-icon"

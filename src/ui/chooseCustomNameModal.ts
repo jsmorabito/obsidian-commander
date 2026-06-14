@@ -3,10 +3,10 @@ import t from "src/l10n";
 import CommanderPlugin from "src/main";
 
 export default class ChooseCustomNameModal extends SuggestModal<string> {
-	// This is used in onOpen, not sure why eslint doesn't recognize it
-	// eslint-disable-next-line no-unused-vars
 	public constructor(
+		// eslint-disable-next-line no-unused-vars
 		private defaultName: string,
+		// eslint-disable-next-line no-unused-vars
 		private plugin: CommanderPlugin
 	) {
 		super(plugin.app);
@@ -62,9 +62,10 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 	public renderSuggestion(value: string, el: HTMLElement): void {}
 
 	// This will be overriden anyway, but typescript complains if it's not declared
-	// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
+	/* eslint-disable no-unused-vars, @typescript-eslint/no-empty-function */
 	public onChooseSuggestion(
 		item: string,
 		evt: MouseEvent | KeyboardEvent
 	): void {}
+	/* eslint-enable no-unused-vars, @typescript-eslint/no-empty-function */
 }

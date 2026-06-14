@@ -1,4 +1,4 @@
-import { ItemView, Menu, setIcon, WorkspaceLeaf } from "obsidian";
+import { ItemView, Menu, WorkspaceLeaf } from "obsidian";
 import t from "src/l10n";
 import CommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
@@ -9,7 +9,7 @@ import { chooseNewCommand, isModeActive } from "src/util";
 import CommandManagerBase from "./commandManager";
 
 export default class PageHeaderManager extends CommandManagerBase {
-	buttons = new WeakMap<ItemView, Map<string, HTMLElement>>();
+	public buttons = new WeakMap<ItemView, Map<string, HTMLElement>>();
 
 	public constructor(plugin: CommanderPlugin, pairArray: CommandIconPair[]) {
 		super(plugin, pairArray);
@@ -112,7 +112,7 @@ export default class PageHeaderManager extends CommandManagerBase {
 		);
 	}
 
-	private addAdderButton(leaf: WorkspaceLeaf) {
+	private addAdderButton(leaf: WorkspaceLeaf): void {
 		const { view } = leaf;
 		const id = "cmdr-adder";
 		if (!(view instanceof ItemView)) return;
@@ -141,7 +141,7 @@ export default class PageHeaderManager extends CommandManagerBase {
 		);
 	}
 
-	private buttonsFor(leaf: WorkspaceLeaf, create = false) {
+	private buttonsFor(leaf: WorkspaceLeaf, create = false): Map<string, HTMLElement> | undefined {
 		if (!(leaf.view instanceof ItemView)) return;
 		if (create && !this.buttons.has(leaf.view))
 			this.buttons.set(leaf.view, new Map());
@@ -164,7 +164,7 @@ export default class PageHeaderManager extends CommandManagerBase {
 		if (this.plugin.settings.showAddCommand) this.addAdderButton(leaf);
 	}
 
-	private removeButtonsFromLeaf(leaf: WorkspaceLeaf) {
+	private removeButtonsFromLeaf(leaf: WorkspaceLeaf): void {
 		const buttons = this.buttonsFor(leaf);
 		if (buttons) {
 			for (const button of buttons.values()) button.detach();

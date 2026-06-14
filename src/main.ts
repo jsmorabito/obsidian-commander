@@ -5,7 +5,7 @@ import {
 	updateStyles,
 } from "src/util";
 import { updateSpacing } from "src/util";
-import { Command, getIconIds, Plugin } from "obsidian";
+import { Command, Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
 import t from "./l10n";
 import {

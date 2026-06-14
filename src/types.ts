@@ -1,11 +1,13 @@
 import { h } from "preact";
 
+/* eslint-disable no-unused-vars */
 export enum Action {
 	COMMAND,
 	DELAY,
 	EDITOR,
 	LOOP,
 }
+/* eslint-enable no-unused-vars */
 
 export type MacroItem =
 	| { action: Action.COMMAND; commandId: string }
