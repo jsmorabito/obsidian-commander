@@ -1,13 +1,10 @@
-import { arrayMoveMutable } from "array-move";
 import { Platform } from "obsidian";
 import { Fragment, h } from "preact";
 import t from "src/l10n";
 import CommanderPlugin from "src/main";
 import { Macro } from "src/types";
-import { isModeActive, ObsidianIcon, updateMacroCommands } from "src/util";
-import ChooseIconModal from "../chooseIconModal";
+import { ObsidianIcon, updateMacroCommands } from "src/util";
 import ConfirmDeleteModal from "../confirmDeleteModal";
-import CommandComponent from "./commandComponent";
 import Logo from "./Logo";
 import MacroBuilderModal from "./MacroBuilderModal";
 
@@ -19,8 +16,8 @@ export default function MacroViewer({
 	plugin,
 	macros,
 }: MacroBuilderProps): h.JSX.Element {
-	const handleBuilder = (macro: Macro, idx?: number) => {
-		const onClose = (updatedMacro: Macro) => {
+	const handleBuilder = (macro: Macro, idx?: number): void => {
+		const onClose = (updatedMacro: Macro): void => {
 			macros.splice(
 				idx !== undefined ? idx : macros.length,
 				idx !== undefined ? 1 : 0,
@@ -36,7 +33,7 @@ export default function MacroViewer({
 		modal.open();
 	};
 
-	const handleDelete = (idx: number) => {
+	const handleDelete = (idx: number): void => {
 		macros.splice(idx, 1);
 		plugin.saveSettings();
 		this.forceUpdate();
@@ -57,7 +54,7 @@ export default function MacroViewer({
 						<div className="setting-item-control">
 							<button
 								aria-label="Edit Macro"
-								onClick={() => handleBuilder(item, idx)}
+								onClick={(): void => handleBuilder(item, idx)}
 							>
 								<ObsidianIcon icon="lucide-pencil" />
 							</button>
@@ -96,7 +93,7 @@ export default function MacroViewer({
 			<div className="cmdr-add-new-wrapper">
 				<button
 					class="mod-cta"
-					onClick={() =>
+					onClick={(): void =>
 						handleBuilder({ name: "", macro: [], icon: "star" })
 					}
 				>

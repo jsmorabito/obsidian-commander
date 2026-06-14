@@ -10,6 +10,7 @@ import { SliderComponent } from "./settingComponent";
 interface MacroBuilderProps {
 	plugin: CommanderPlugin;
 	macro: Macro;
+	// eslint-disable-next-line no-unused-vars
 	onSave: (macro: Macro) => void;
 	onCancel: () => void;
 }
@@ -26,9 +27,7 @@ export default function ({
 		JSON.parse(JSON.stringify(macro.macro)) || []
 	);
 
-	const forceUpdate = this.forceUpdate.bind(this);
-
-	const handleAddCommand = async () => {
+	const handleAddCommand = async (): Promise<void> => {
 		const command = await new AddCommandModal(plugin).awaitSelection();
 		if (command) {
 			setMacroCommands([
@@ -38,7 +37,7 @@ export default function ({
 		}
 	};
 
-	const handleAddDelay = async () => {
+	const handleAddDelay = async (): Promise<void> => {
 		setMacroCommands([
 			...macroCommands,
 			{ action: Action.DELAY, delay: 250 },
@@ -54,14 +53,14 @@ export default function ({
 						type="text"
 						placeholder="Macro Name"
 						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
+						onChange={(e): void => setName(e.currentTarget.value)}
 						width="100%"
 					/>
 				</div>
 				<div>
 					<span>Icon</span>
 					<button
-						onClick={async () =>
+						onClick={async (): Promise<void> =>
 							setIcon(
 								await new ChooseIconModal(
 									plugin
@@ -76,7 +75,7 @@ export default function ({
 
 			{macroCommands.map((item, idx) => {
 				switch (item.action) {
-					case Action.COMMAND:
+					case Action.COMMAND: {
 						const command = getCommandFromId(
 							item.commandId,
 							plugin
@@ -111,7 +110,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="arrow-down"
-											onClick={() => {
+											onClick={(): void => {
 												if (
 													idx ===
 													macroCommands.length - 1
@@ -130,7 +129,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="arrow-up"
-											onClick={() => {
+											onClick={(): void => {
 												if (idx === 0) return;
 												const newCommands = [
 													...macroCommands,
@@ -145,7 +144,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="cross"
-											onClick={() => {
+											onClick={(): void => {
 												setMacroCommands(
 													macroCommands.filter(
 														(_, i) => i !== idx
@@ -157,6 +156,7 @@ export default function ({
 								</div>
 							</div>
 						);
+					}
 					case Action.DELAY:
 						return (
 							<div class="setting-item cmdr-mm-item">
@@ -168,7 +168,7 @@ export default function ({
 										step={50}
 										description="Delay in milliseconds"
 										value={item.delay}
-										changeHandler={(value) =>
+										changeHandler={(value): void =>
 											(item.delay = value)
 										}
 									/>
@@ -178,7 +178,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="arrow-down"
-											onClick={() => {
+											onClick={(): void => {
 												if (
 													idx ===
 													macroCommands.length - 1
@@ -197,7 +197,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="arrow-up"
-											onClick={() => {
+											onClick={(): void => {
 												if (idx === 0) return;
 												const newCommands = [
 													...macroCommands,
@@ -212,7 +212,7 @@ export default function ({
 										<ObsidianIcon
 											class="clickable-icon"
 											icon="cross"
-											onClick={() => {
+											onClick={(): void => {
 												setMacroCommands(
 													macroCommands.filter(
 														(_, i) => i !== idx
@@ -237,7 +237,7 @@ export default function ({
 						type="checkbox"
 						id="checkbox"
 						checked={startup}
-						onChange={({ target }) => {
+						onChange={({ target }): void => {
 							//@ts-expect-error
 							setStartup(target?.checked ?? false);
 						}}
@@ -256,7 +256,7 @@ export default function ({
 				<button
 					class={macroCommands.length === 0 ? "disabled" : "mod-cta"}
 					disabled={macroCommands.length === 0}
-					onClick={() =>
+					onClick={(): boolean | void =>
 						macroCommands.length &&
 						onSave({ macro: macroCommands, name, icon, startup })
 					}

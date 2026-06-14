@@ -15,9 +15,12 @@ interface CommandViewerProps {
 	handleUp: () => void;
 	handleDown: () => void;
 	handleNewIcon: () => void;
-	handleRename: (name: string) => void;
-	handleModeChange: (mode?: string) => void;
-	handleColorChange: (color?: string) => void;
+	// eslint-disable-next-line no-unused-vars
+	handleRename: (_name: string) => void;
+	// eslint-disable-next-line no-unused-vars
+	handleModeChange: (_mode?: string) => void;
+	// eslint-disable-next-line no-unused-vars
+	handleColorChange: (_color?: string) => void;
 	sortable?: boolean;
 }
 
@@ -146,7 +149,7 @@ export default function CommandComponent({
 							{isChecked
 								? t(
 										"Warning: This is a checked Command, meaning it might not run under every circumstance."
-								  )
+									)
 								: ""}
 						</div>
 					</div>

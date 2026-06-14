@@ -625,4 +625,4 @@ export const ICON_LIST = requireApiVersion("1.7.3")
 			"zoom-in",
 			"zoom-out",
 			"search-large",
-	  ];
+	];

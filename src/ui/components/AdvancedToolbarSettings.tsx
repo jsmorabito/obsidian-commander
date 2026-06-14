@@ -5,7 +5,7 @@ import CommanderPlugin from "src/main";
 import { injectIcons, ObsidianIcon, updateStyles } from "src/util";
 import ChooseIconModal from "../chooseIconModal";
 
-function render(containerEl: HTMLElement, plugin: CommanderPlugin) {
+function render(containerEl: HTMLElement, plugin: CommanderPlugin): void {
 	containerEl.empty();
 
 	new Setting(containerEl)

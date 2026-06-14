@@ -3,7 +3,8 @@ import { CommandIconPair } from "src/types";
 import CommandManagerBase from "./commandManager";
 
 interface TextToolbarAPI {
-	setCommands(cmds: { id: string; icon: string; name: string }[]): void;
+	// eslint-disable-next-line no-unused-vars
+	setCommands(_cmds: { id: string; icon: string; name: string }[]): void;
 }
 
 function getTextToolbarAPI(plugin: CommanderPlugin): TextToolbarAPI | undefined {
