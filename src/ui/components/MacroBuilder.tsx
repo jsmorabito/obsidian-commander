@@ -168,9 +168,9 @@ export default function ({
 										step={50}
 										description="Delay in milliseconds"
 										value={item.delay}
-										changeHandler={(value): void =>
-											(item.delay = value)
-										}
+										changeHandler={(value): void => {
+											item.delay = value;
+										}}
 									/>
 								</div>
 								<div>
@@ -256,10 +256,10 @@ export default function ({
 				<button
 					class={macroCommands.length === 0 ? "disabled" : "mod-cta"}
 					disabled={macroCommands.length === 0}
-					onClick={(): boolean | void =>
-						macroCommands.length &&
-						onSave({ macro: macroCommands, name, icon, startup })
-					}
+					onClick={(): void => {
+						if (macroCommands.length)
+							onSave({ macro: macroCommands, name, icon, startup });
+					}}
 				>
 					Save
 				</button>
