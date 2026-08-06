@@ -3,7 +3,7 @@ import { CommanderSettings } from "./types";
 
 export const DEFAULT_SETTINGS: CommanderSettings = {
 	confirmDeletion: true,
-	showAddCommand: true,
+	showAddCommand: false,
 	debug: false,
 	editorMenu: [],
 	fileMenu: [],
