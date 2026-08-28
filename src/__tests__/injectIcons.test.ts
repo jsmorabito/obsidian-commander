@@ -32,11 +32,12 @@ describe("injectIcons", () => {
 		expect(commands["my:command"].icon).toBe("star");
 	});
 
-	it("removes mappedIcon entry when command does not exist", () => {
+	it("keeps the mappedIcon entry when the command does not exist yet", () => {
 		const commands = {};
 		const settings = makeSettings([{ iconID: "star", commandID: "missing:command" }]);
 		injectIcons(settings, makePlugin(commands));
-		expect(settings.mappedIcons).toHaveLength(0);
+		expect(settings.mappedIcons).toHaveLength(1);
+		expect(settings.mappedIcons[0].commandID).toBe("missing:command");
 	});
 
 	it("leaves unrelated mapped icons intact", () => {
@@ -54,15 +55,14 @@ describe("injectIcons", () => {
 		expect(settings.mappedIcons).toHaveLength(2);
 	});
 
-	it("only prunes the missing command and keeps valid ones", () => {
+	it("keeps every mapping and still applies the icons that resolve", () => {
 		const commands = { "exists:cmd": { icon: "" } };
 		const settings = makeSettings([
 			{ iconID: "star", commandID: "missing:cmd" },
 			{ iconID: "home", commandID: "exists:cmd" },
 		]);
 		injectIcons(settings, makePlugin(commands));
-		expect(settings.mappedIcons).toHaveLength(1);
-		expect(settings.mappedIcons[0].commandID).toBe("exists:cmd");
+		expect(settings.mappedIcons).toHaveLength(2);
 		expect(commands["exists:cmd"].icon).toBe("home");
 	});
 });

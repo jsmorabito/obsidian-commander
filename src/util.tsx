@@ -183,10 +183,13 @@ export function injectIcons(
 ): void {
 	settings.mappedIcons.forEach((mapped) => {
 		const command = plugin.app.commands.commands[mapped.commandID];
+		// Apply the icon only when the command is available. Do NOT drop the
+		// mapping when it isn't: at this point (onLayoutReady) the command's
+		// plugin may just be slow to load, or absent on this device (mobile).
+		// Pruning here permanently loses the user's mapping and syncs that loss
+		// to every other device.
 		if (command) {
 			command.icon = mapped.iconID;
-		} else {
-			settings.mappedIcons = settings.mappedIcons.filter(m => m !== mapped);
 		}
 	});
 }
