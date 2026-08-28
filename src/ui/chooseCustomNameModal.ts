@@ -31,10 +31,22 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		void super.onOpen();
 
 		this.inputEl.value = this.defaultName;
+
+		const inputContainer = this.inputEl.parentElement;
 		const wrapper = createDiv({ cls: "cmdr-name-input-wrapper" });
-		this.inputEl.parentNode?.insertBefore(wrapper, this.inputEl);
-		wrapper.appendChild(this.inputEl);
-		wrapper.parentElement!.addClass("cmdr-name-input-wrapper-parent");
+		inputContainer?.insertBefore(wrapper, this.inputEl);
+
+		// Keep the input and Obsidian's native clear button together in their own
+		// positioned field, so the absolutely-positioned clear button stays pinned
+		// to the input instead of overlapping the Save button (especially on mobile).
+		const field = wrapper.createDiv({ cls: "cmdr-name-input-field" });
+		field.appendChild(this.inputEl);
+		const clearButton = inputContainer?.querySelector(
+			".search-input-clear-button"
+		);
+		if (clearButton) field.appendChild(clearButton);
+
+		inputContainer?.addClass("cmdr-name-input-wrapper-parent");
 
 		const btn = createEl("button", { text: t("Save"), cls: "mod-cta" });
 		btn.onclick = (e): void => this.selectSuggestion(this.inputEl.value, e);

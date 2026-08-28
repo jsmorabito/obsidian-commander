@@ -463,8 +463,16 @@
 	gap: 8px;
 	align-items: center;
 
+	.cmdr-name-input-field {
+		position: relative;
+		display: flex;
+		flex: 1;
+		min-width: 0;
+	}
+
 	button {
 		margin: 8px;
+		flex-shrink: 0;
 	}
 }
 
