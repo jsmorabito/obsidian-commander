@@ -7,6 +7,10 @@ export default class LeftRibbonManager extends CommandManagerBase {
 	public plugin: CommanderPlugin;
 	//private addBtn: HTMLDivElement;
 
+	// Pairs that already have an unload cleanup registered. Re-injecting after a
+	// layout switch must not stack another `plugin.register` callback each time.
+	private readonly registered = new Set<CommandIconPair>();
+
 	public constructor(plugin: CommanderPlugin) {
 		super(plugin, plugin.settings.leftRibbon);
 		this.plugin = plugin;
@@ -15,13 +19,34 @@ export default class LeftRibbonManager extends CommandManagerBase {
 			void this.addCommand(pair, false);
 		});
 
-		this.plugin.app.workspace.onLayoutReady(() => {
-			// if (this.plugin.settings.showAddCommand) {
-			// 	this.plugin.addRibbonIcon("plus", t("Add new"), async () =>
-			// 		this.addCommand(await chooseNewCommand(plugin))
-			// 	);
-			// }
-		});
+		// Obsidian rebuilds the ribbon on every workspace/layout switch (the core
+		// Workspaces plugin and Workspaces Plus both call `changeLayout`). When it
+		// does, our imperatively-added icons are dropped. Re-assert them afterwards
+		// instead of leaving the ribbon missing until the plugin is reloaded.
+		this.plugin.registerEvent(
+			this.plugin.app.workspace.on("layout-change", () => this.reinject())
+		);
+	}
+
+	/**
+	 * Re-add any configured ribbon icons that are missing from the current ribbon,
+	 * e.g. after a workspace switch tore the ribbon down and rebuilt it.
+	 */
+	private reinject(): void {
+		for (const pair of this.plugin.settings.leftRibbon) {
+			if (!isModeActive(pair.mode, this.plugin)) continue;
+
+			const item = this.plugin.app.workspace.leftRibbon.items.find(
+				(i) => i.icon === pair.icon && i.title === pair.name
+			);
+			if (item && item.buttonEl?.isConnected) continue;
+			if (item) {
+				// Stale entry left behind by a torn-down ribbon: drop it so
+				// addCommand() doesn't match it and skip the rebuild.
+				this.plugin.app.workspace.leftRibbon.items.remove(item);
+			}
+			void this.addCommand(pair, false);
+		}
 	}
 
 	public async addCommand(
@@ -45,7 +70,10 @@ export default class LeftRibbonManager extends CommandManagerBase {
 						? "inherit"
 						: pair.color;
 			}
-			this.plugin.register(() => this.removeCommand(pair, false));
+			if (!this.registered.has(pair)) {
+				this.registered.add(pair);
+				this.plugin.register(() => this.removeCommand(pair, false));
+			}
 		}
 	}
 
