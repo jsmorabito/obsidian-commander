@@ -47,6 +47,24 @@ export default class LeftRibbonManager extends CommandManagerBase {
 			}
 			void this.addCommand(pair, false);
 		}
+		this.applyOrder();
+	}
+
+	/**
+	 * Re-append our ribbon buttons in the order the user configured them. After a
+	 * ribbon rebuild (or a piecemeal re-inject) our items would otherwise end up
+	 * scattered or in load order. Absolute position relative to non-Commander
+	 * items is still governed by Obsidian's own saved ribbon order.
+	 */
+	private applyOrder(): void {
+		const container = this.plugin.app.workspace.leftRibbon.ribbonItemsEl;
+		if (!container) return;
+		for (const pair of this.plugin.settings.leftRibbon) {
+			const item = this.plugin.app.workspace.leftRibbon.items.find(
+				(i) => i.icon === pair.icon && i.title === pair.name
+			);
+			if (item?.buttonEl?.isConnected) container.appendChild(item.buttonEl);
+		}
 	}
 
 	public async addCommand(
@@ -99,5 +117,6 @@ export default class LeftRibbonManager extends CommandManagerBase {
 			void this.removeCommand(pair, false);
 			void this.addCommand(pair, false);
 		});
+		this.applyOrder();
 	}
 }
