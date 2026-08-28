@@ -142,12 +142,27 @@ export default class CommanderPlugin extends Plugin {
 	}
 
 	private async loadSettings(): Promise<void> {
-		const data = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		) as CommanderSettings;
-		this.settings = data;
+		const loaded = (await this.loadData()) as unknown;
+		// loadData() can return null (no file) or a partially written / corrupt
+		// object (e.g. an interrupted sync). Fall back to an empty object and
+		// deep-merge the nested groups, so a malformed `hide` / `advancedToolbar`
+		// can't wipe the user's buttons back to defaults on the next save.
+		const data =
+			loaded && typeof loaded === "object" && !Array.isArray(loaded)
+				? (loaded as Partial<CommanderSettings>)
+				: {};
+		this.settings = {
+			...DEFAULT_SETTINGS,
+			...data,
+			hide: {
+				...DEFAULT_SETTINGS.hide,
+				...(data.hide ?? {}),
+			},
+			advancedToolbar: {
+				...DEFAULT_SETTINGS.advancedToolbar,
+				...(data.advancedToolbar ?? {}),
+			},
+		};
 	}
 
 	public async saveSettings(): Promise<void> {
