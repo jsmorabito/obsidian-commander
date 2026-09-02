@@ -167,6 +167,27 @@ export default class CommanderPlugin extends Plugin {
 				...advancedToolbar,
 			},
 		};
+
+		// One-time migration (TODO: remove in a future version). The old default
+		// `spacing: 8` applied `margin-right: 8px` to every toolbar icon,
+		// Obsidian's own included — a regression from the native baseline. Reset a
+		// persisted 8 back to 0 once; `spacingReset` guards re-runs so a
+		// deliberate re-set to 8 sticks. A fresh vault has nothing to migrate, so
+		// it records the flag in memory without writing to disk.
+		if (this.settings.spacingReset === undefined) {
+			if (this.settings.spacing === 8) this.settings.spacing = 0;
+			this.settings.spacingReset = true;
+			if (isObject(loaded)) {
+				try {
+					await this.saveSettings();
+				} catch (e) {
+					console.error(
+						"Commander: could not persist spacing migration",
+						e
+					);
+				}
+			}
+		}
 	}
 
 	public async saveSettings(): Promise<void> {

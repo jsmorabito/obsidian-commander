@@ -105,7 +105,7 @@ export function SliderComponent({
 			name={props.name}
 			className="cmdr-slider"
 		>
-			<div class="cmdr-flex cmdr-items-center">
+			<div class="cmdr-slider-control">
 				{defaultValue !== undefined && (
 					<ObsidianIcon
 						aria-label={t("Restore default")}
@@ -144,7 +144,7 @@ export function SliderComponent({
 					max={props.max ?? "32"}
 					step={props.step ?? "1"}
 					value={val}
-					onPointerMove={({ target }): void => {
+					onInput={({ target }): void => {
 						const value = Number((target as HTMLInputElement).value);
 						if (!isNaN(value) && val !== value) {
 							setVal(value);

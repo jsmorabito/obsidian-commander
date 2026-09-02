@@ -40,6 +40,13 @@ export interface CommanderSettings {
 		leftRibbon: string[];
 	};
 	spacing: number;
+	/**
+	 * Set once the one-time `spacing: 8` -> `0` migration has run. The old
+	 * default of 8 silently widened *all* toolbar icons (Obsidian's included);
+	 * this flag stops the migration from re-running if a user deliberately
+	 * sets 8 again. TODO: remove this in a future version.
+	 */
+	spacingReset?: boolean;
 	advancedToolbar: AdvancedToolbarSettings;
 }
 

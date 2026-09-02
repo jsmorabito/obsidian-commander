@@ -126,7 +126,21 @@ export async function showConfetti({ target }: MouseEvent): Promise<void> {
 }
 
 export function updateSpacing(spacing: number): void {
-	activeDocument.body.style.setProperty("--cmdr-spacing", `${spacing}px`);
+	// Target the main window's <body> (like updateStyles/removeStyles), not
+	// `activeDocument` — the slider lives in the settings window, so
+	// `activeDocument` there is the wrong document and the toolbars (which are in
+	// the main window) wouldn't update until the next reload.
+	const { style, classList } = document.body;
+	if (spacing > 0) {
+		style.setProperty("--cmdr-spacing", `${spacing}px`);
+		classList.add("cmdr-custom-spacing");
+	} else {
+		// Default (0): drop the var and the gating class entirely so the
+		// stylesheet's `margin` rules don't match at all — Commander then leaves
+		// native/theme toolbar spacing exactly as it is.
+		style.removeProperty("--cmdr-spacing");
+		classList.remove("cmdr-custom-spacing");
+	}
 }
 
 export function updateMacroCommands(plugin: CommanderPlugin): void {
@@ -170,6 +184,8 @@ export function removeStyles(): void {
 	s.removeProperty("--at-row-count");
 	s.removeProperty("--at-spacing");
 	s.removeProperty("--at-offset");
+	s.removeProperty("--cmdr-spacing");
+	c.remove("cmdr-custom-spacing");
 	c.remove("AT-multirow");
 	c.remove("AT-row");
 	c.remove("AT-column");

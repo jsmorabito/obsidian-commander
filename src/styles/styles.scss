@@ -511,24 +511,39 @@
 }
 
 .cmdr-slider {
-	.setting-item-control > div {
+	// Match core's .setting-item-control layout: reset button sits inline to the
+	// left of the value + slider, vertically centred and right-aligned as a
+	// group. `gap` spaces all three children evenly.
+	.cmdr-slider-control {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: var(--size-4-2);
 		width: 100%;
 	}
-	input.slider {
-		margin-left: 4px;
+}
+
+// Extra spacing between *all* toolbar icons (core + Commander's), driven by the
+// "custom spacing" slider. The whole block is gated on `.cmdr-custom-spacing`,
+// which `updateSpacing()` only adds while the slider is above 0 — so at the
+// default of 0 Commander adds no margin anywhere and native/theme spacing is
+// untouched (toggling the plugin on/off is a no-op).
+//
+// Title-bar / status-bar / ribbon buttons previously subtracted a hard-coded 8px
+// here (`calc(var(--cmdr-spacing) - 8px)`), which made the slider a no-op at the
+// old default of 8 and pulled those icons together for any value below it. They
+// now use the same raw value as .view-action. A persisted spacing of 8 is
+// migrated to 0 (see loadSettings); other custom values apply uniformly.
+.cmdr-custom-spacing {
+	.view-action:not(:last-child),
+	.titlebar-button:not(:last-child),
+	.status-bar-item:not(:last-child) {
+		margin-right: var(--cmdr-spacing);
 	}
-}
 
-.view-action:not(:last-child) {
-	margin-right: var(--cmdr-spacing);
-}
-.titlebar-button:not(:last-child),
-.status-bar-item:not(:last-child) {
-	margin-right: calc(var(--cmdr-spacing) - 8px);
-}
-
-.side-dock-ribbon-action:not(:last-child) {
-	margin-bottom: calc(var(--cmdr-spacing) - 8px);
+	.side-dock-ribbon-action:not(:last-child) {
+		margin-bottom: var(--cmdr-spacing);
+	}
 }
 
 .cmdr-cta {

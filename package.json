@@ -9,7 +9,7 @@
 		"version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
 		"icons": "node scripts/update-icon-list.mjs",
 		"build:css": "npx tailwindcss -i ./main.css -o ./styles.css --minify",
-		"build": "npm run build:esbuild && npm run build:css",
+		"build": "npm run build:esbuild",
 		"dev:css": "npx tailwindcss -i ./main.css -o ./styles.css --watch",
 		"dev": "npm-run-all --parallel dev:*",
 		"lint": "eslint .",

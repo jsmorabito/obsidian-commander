@@ -19,7 +19,7 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 		statusbar: [],
 		leftRibbon: [],
 	},
-	spacing: 8,
+	spacing: 0,
 	advancedToolbar: {
 		rowHeight: 48,
 		rowCount: 1,

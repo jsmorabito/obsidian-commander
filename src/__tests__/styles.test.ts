@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { updateStyles, removeStyles } from "../util";
+import { updateStyles, removeStyles, updateSpacing } from "../util";
 import type { AdvancedToolbarSettings } from "../types";
 
 const defaultSettings: AdvancedToolbarSettings = {
@@ -75,5 +75,43 @@ describe("removeStyles", () => {
 		expect(document.body.classList.contains("AT-multirow")).toBe(false);
 		expect(document.body.classList.contains("AT-row")).toBe(false);
 		expect(document.body.classList.contains("AT-column")).toBe(false);
+	});
+
+	it("clears the custom-spacing var and class", () => {
+		updateSpacing(12);
+		removeStyles();
+		expect(document.body.style.getPropertyValue("--cmdr-spacing")).toBe("");
+		expect(document.body.classList.contains("cmdr-custom-spacing")).toBe(
+			false
+		);
+	});
+});
+
+describe("updateSpacing", () => {
+	it("sets the var and gating class for a positive value", () => {
+		updateSpacing(16);
+		expect(document.body.style.getPropertyValue("--cmdr-spacing")).toBe(
+			"16px"
+		);
+		expect(document.body.classList.contains("cmdr-custom-spacing")).toBe(
+			true
+		);
+	});
+
+	it("adds nothing at 0 so native spacing is untouched", () => {
+		updateSpacing(0);
+		expect(document.body.style.getPropertyValue("--cmdr-spacing")).toBe("");
+		expect(document.body.classList.contains("cmdr-custom-spacing")).toBe(
+			false
+		);
+	});
+
+	it("clears a previously-set value when returning to 0", () => {
+		updateSpacing(16);
+		updateSpacing(0);
+		expect(document.body.style.getPropertyValue("--cmdr-spacing")).toBe("");
+		expect(document.body.classList.contains("cmdr-custom-spacing")).toBe(
+			false
+		);
 	});
 });

@@ -5,6 +5,7 @@ import alias from "esbuild-plugin-alias";
 import { sassPlugin } from "esbuild-sass-plugin";
 import { createRequire } from "module";
 import { renameSync, copyFileSync, appendFileSync } from "fs";
+import { execSync } from "child_process";
 const require = createRequire(import.meta.url);
 
 const banner = `/*
@@ -70,7 +71,7 @@ const buildOptions = {
 		}),
 		sassPlugin(),
 		{
-			name: "Insert Tailwind Directives",
+			name: "Build stylesheet",
 			setup(build) {
 				build.onEnd(() => {
 					try {
@@ -80,6 +81,22 @@ const buildOptions = {
 						);
 					} catch (error) {
 						console.error(error);
+						return;
+					}
+					// Compile main.css (SCSS output + @tailwind directives) into
+					// the styles.css Obsidian loads. In watch mode the parallel
+					// `dev:css` task owns this, so only run it for production
+					// builds — that keeps `npm run build:esbuild` self-sufficient
+					// and never leaves a raw, utility-less styles.css behind.
+					if (prod) {
+						try {
+							execSync(
+								"npx tailwindcss -i ./main.css -o ./styles.css --minify",
+								{ stdio: "inherit" }
+							);
+						} catch (error) {
+							console.error("Failed to compile styles.css:", error);
+						}
 					}
 				});
 			},
@@ -88,13 +105,6 @@ const buildOptions = {
 			name: "Move output",
 			setup(build) {
 				build.onEnd(() => {
-					// Always copy main.css → styles.css locally so Obsidian loads current styles
-					try {
-						copyFileSync("main.css", "styles.css");
-					} catch (error) {
-						console.error("Failed to copy main.css → styles.css:", error);
-					}
-
 					setTimeout(
 						() => {
 							try {
