@@ -47,3 +47,15 @@ export class PluginSettingTab {
 	public containerEl: HTMLElement = document.createElement("div");
 	public constructor(app: unknown, plugin: unknown) { this.app = app; this.plugin = plugin; }
 }
+
+export class Menu {
+	// eslint-disable-next-line @typescript-eslint/no-empty-function -- test double
+	public showAtMouseEvent(): void {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-function -- test double
+	public showAtPosition(): void {}
+}
+export class MenuItem {
+	// eslint-disable-next-line @typescript-eslint/no-empty-function -- test double
+	public setTitle(): void {}
+}
+export class MarkdownView {}

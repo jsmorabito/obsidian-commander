@@ -9,7 +9,7 @@ import CommanderPlugin from "../../main";
 import About from "./About";
 import AdvancedToolbarSettings from "./AdvancedToolbarSettings";
 import CommandViewer from "./commandViewerComponent";
-import { LeftRibbonHider, StatusbarHider } from "./hidingViewer";
+import { LeftRibbonHider, MenuItemHider, StatusbarHider } from "./hidingViewer";
 import MacroViewer from "./MacroViewer";
 import { SliderComponent, ToggleComponent } from "./settingComponent";
 import TextToolbarIntegrationManager from "src/manager/commands/textToolbarIntegrationManager";
@@ -217,7 +217,12 @@ export default function settingTabComponent({
 					<CommandViewer
 						manager={plugin.manager.editorMenu}
 						plugin={plugin}
-					/>
+					>
+						<MenuItemHider
+							plugin={plugin}
+							scope="editorMenuItems"
+						/>
+					</CommandViewer>
 				),
 			},
 			{
@@ -226,7 +231,9 @@ export default function settingTabComponent({
 					<CommandViewer
 						manager={plugin.manager.fileMenu}
 						plugin={plugin}
-					/>
+					>
+						<MenuItemHider plugin={plugin} scope="fileMenuItems" />
+					</CommandViewer>
 				),
 			},
 			{

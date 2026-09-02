@@ -18,6 +18,10 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 	hide: {
 		statusbar: [],
 		leftRibbon: [],
+		editorMenuItems: [],
+		fileMenuItems: [],
+		seenEditorMenuItems: [],
+		seenFileMenuItems: [],
 	},
 	spacing: 0,
 	advancedToolbar: {

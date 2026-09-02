@@ -1,6 +1,7 @@
 import {
 	Command,
 	Editor,
+	MarkdownFileInfo,
 	MarkdownView,
 	Menu,
 	MenuItem,
@@ -174,7 +175,7 @@ export class EditorMenuCommandManager extends Base {
 		return async (
 			menu: Menu,
 			editor: Editor,
-			view: MarkdownView
+			view: MarkdownView | MarkdownFileInfo
 		): Promise<void> => {
 			this.addCommandAddButton(plugin, menu, plugin.settings.editorMenu);
 

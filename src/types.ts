@@ -38,6 +38,14 @@ export interface CommanderSettings {
 	hide: {
 		statusbar: string[];
 		leftRibbon: string[];
+		/** Titles/regexes removed from the editor right-click menu. */
+		editorMenuItems: string[];
+		/** Titles/regexes removed from the file right-click menu. */
+		fileMenuItems: string[];
+		/** Menu-item titles observed in editor menus, for the settings checklist. */
+		seenEditorMenuItems: string[];
+		/** Menu-item titles observed in file menus, for the settings checklist. */
+		seenFileMenuItems: string[];
 	};
 	spacing: number;
 	/**
@@ -82,6 +90,14 @@ export interface CommandIconPair {
 declare module "obsidian" {
 	interface MenuItem {
 		dom: HTMLElement;
+		titleEl?: HTMLElement;
+	}
+
+	interface Menu {
+		/** Internal list of items/separators, in render order. */
+		items?: unknown[];
+		/** Set on submenus; points at the parent Menu. */
+		parentMenu?: Menu | null;
 	}
 
 	interface App {

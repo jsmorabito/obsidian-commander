@@ -643,3 +643,48 @@
 .cmdr-mm-action-options {
 	display: flex;
 }
+
+.cmdr-menu-hider-description {
+	margin: 0 0 12px;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+
+	code {
+		font-size: var(--font-smallest);
+	}
+}
+
+.cmdr-menu-hider-add {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+
+	input {
+		flex: 1;
+	}
+}
+
+.cmdr-menu-hider-row {
+	.setting-item-info code {
+		font-size: var(--font-ui-smaller);
+		word-break: break-all;
+	}
+}
+
+.cmdr-menu-hider-invalid {
+	color: var(--text-error);
+}
+
+.cmdr-menu-hider-hint {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	margin: 4px 0 10px;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+
+	.svg-icon {
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+}

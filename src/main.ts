@@ -25,6 +25,7 @@ import "./styles/advanced-toolbar.scss";
 import { updateHiderStylesheet } from "./util";
 import registerCustomIcons from "./ui/icons";
 import LeftRibbonManager from "./manager/commands/leftRibbonManager";
+import MenuHiderManager from "./manager/menuHiderManager";
 
 export default class CommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
@@ -38,6 +39,7 @@ export default class CommanderPlugin extends Plugin {
 		pageHeader: PageHeaderManager;
 		explorerManager: ExplorerManager;
 		textToolbarIntegration: TextToolbarIntegrationManager;
+		menuHider: MenuHiderManager;
 	};
 
 	public async executeStartupMacros(): Promise<void> {
@@ -82,6 +84,10 @@ export default class CommanderPlugin extends Plugin {
 	public async onload(): Promise<void> {
 		await this.loadSettings();
 		this.settings.hide.leftRibbon ??= []; // TODO: remove this in a future version
+		this.settings.hide.editorMenuItems ??= []; // TODO: remove this in a future version
+		this.settings.hide.fileMenuItems ??= []; // TODO: remove this in a future version
+		this.settings.hide.seenEditorMenuItems ??= []; // TODO: remove this in a future version
+		this.settings.hide.seenFileMenuItems ??= []; // TODO: remove this in a future version
 
 		registerCustomIcons();
 
@@ -98,6 +104,7 @@ export default class CommanderPlugin extends Plugin {
 			pageHeader: new PageHeaderManager(this, this.settings.pageHeader),
 			explorerManager: new ExplorerManager(this, this.settings.explorer),
 			textToolbarIntegration: new TextToolbarIntegrationManager(this, this.settings.textToolbarCommands),
+			menuHider: new MenuHiderManager(this),
 		};
 
 		this.addSettingTab(new CommanderSettingTab(this));
@@ -108,18 +115,23 @@ export default class CommanderPlugin extends Plugin {
 			callback: () => new SettingTabModal(this).open(),
 		});
 
+		const applyEditorMenu =
+			this.manager.editorMenu.applyEditorMenuCommands(this);
 		this.registerEvent(
-			this.app.workspace.on(
-				"editor-menu",
-				this.manager.editorMenu.applyEditorMenuCommands(this)
-			)
+			this.app.workspace.on("editor-menu", (menu, editor, info) => {
+				// Tag the menu so MenuHiderManager knows which hide list applies
+				// (including submenus, via the parentMenu walk).
+				this.manager.menuHider.tag(menu, "editorMenuItems");
+				return applyEditorMenu(menu, editor, info);
+			})
 		);
 
+		const applyFileMenu = this.manager.fileMenu.applyFileMenuCommands(this);
 		this.registerEvent(
-			this.app.workspace.on(
-				"file-menu",
-				this.manager.fileMenu.applyFileMenuCommands(this)
-			)
+			this.app.workspace.on("file-menu", (menu, file, source, leaf) => {
+				this.manager.menuHider.tag(menu, "fileMenuItems");
+				return applyFileMenu(menu, file, source, leaf);
+			})
 		);
 
 		this.app.workspace.onLayoutReady(() => {
