@@ -1,7 +1,7 @@
-import { Platform, PluginManifest } from "obsidian";
+import { PluginManifest } from "obsidian";
 import { h } from "preact";
 import t from "src/l10n";
-import { showConfetti, ObsidianIcon } from "src/util";
+import { showConfetti } from "src/util";
 import Credits from "./Credits";
 import Logo from "./Logo";
 
@@ -10,79 +10,40 @@ export default function About({
 }: {
 	manifest: PluginManifest;
 }): h.JSX.Element {
-	const feedbackBtn = (
-		<button
-			className="mod-cta"
-			onClick={(e): void => {
-				void showConfetti(e);
-				window.setTimeout(
-					() =>
-						location.replace("https://forms.gle/hPjn61G9bqqFb3256"),
-					Math.random() * 800 + 500
-				);
-			}}
-		>
-			<ObsidianIcon icon="message-square" size={20} />
-			{t("Leave feedback")}
-		</button>
-	);
-	const donateBtn = (
-		<button
-			className="mod-cta"
-			onClick={(e): void => {
-				void showConfetti(e);
-				window.setTimeout(
-					() => location.replace("https://buymeacoffee.com/johnny1093"),
-					Math.random() * 800 + 500
-				);
-			}}
-		>
-			<ObsidianIcon icon="coffee" size={20} />
-			{t("Support development")}
-		</button>
-	);
+	const openWithConfetti =
+		(url: string) =>
+		(e: h.JSX.TargetedMouseEvent<HTMLAnchorElement>): void => {
+			e.preventDefault();
+			void showConfetti(e);
+			window.setTimeout(
+				() => location.replace(url),
+				Math.random() * 800 + 500
+			);
+		};
+
 	return (
 		<div className="cmdr-about">
-			{Platform.isMobile && [<hr />, feedbackBtn, donateBtn]}
-			{Platform.isDesktop && [
-				<div
-					className="setting-item mod-toggle"
-					style={{
-						width: "100%",
-						borderTop:
-							"1px solid var(--background-modifier-border)",
-						paddingTop: "18px",
-					}}
-				>
-					<div className="setting-item-info">
-						<div className="setting-item-name">
-							{t("Leave feedback")}
-						</div>
-						<div className="setting-item-description">
-							{t(
-								"Share feedback, issues, and ideas with our feedback form."
-							)}
-						</div>
-					</div>
-					<div className="setting-item-control">{feedbackBtn}</div>
-				</div>,
-				<div
-					className="setting-item mod-toggle"
-					style={{ width: "100%" }}
-				>
-					<div className="setting-item-info">
-						<div className="setting-item-name">{t("Donate")}</div>
-						<div className="setting-item-description">
-							{t("Consider donating to support development.")}
-						</div>
-					</div>
-					<div className="setting-item-control">{donateBtn}</div>
-				</div>,
-				<hr />,
-			]}
 			<Logo />
 			<b>{manifest.name}</b>
 			<Credits />
+			<div className="cmdr-about-links">
+				<a
+					href="https://forms.gle/hPjn61G9bqqFb3256"
+					onClick={openWithConfetti(
+						"https://forms.gle/hPjn61G9bqqFb3256"
+					)}
+				>
+					{t("Send feedback")}
+				</a>
+				<a
+					href="https://buymeacoffee.com/johnny1093"
+					onClick={openWithConfetti(
+						"https://buymeacoffee.com/johnny1093"
+					)}
+				>
+					{t("Donate")}
+				</a>
+			</div>
 			<a
 				className="cmdr-version"
 				href={

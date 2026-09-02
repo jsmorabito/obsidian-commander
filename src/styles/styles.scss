@@ -422,23 +422,22 @@
 		margin-top: 0;
 	}
 
-	button {
+	.cmdr-about-links {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		height: 2.6em;
-		font-weight: 700;
-		gap: 16px;
-		border-radius: 6px;
-		margin-bottom: 8px;
+		gap: 0;
+		font-size: 13px;
 
-		&:last-of-type {
-			margin-bottom: 32px;
-		}
-	}
+		a {
+			color: var(--text-muted);
+			text-decoration: none;
+			cursor: pointer;
 
-	.setting-item {
-		button {
-			margin: 0;
+			&:hover {
+				color: var(--text-accent);
+				text-decoration: underline;
+			}
 		}
 	}
 
