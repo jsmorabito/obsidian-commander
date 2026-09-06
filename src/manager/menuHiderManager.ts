@@ -30,6 +30,13 @@ export interface Matcher {
 
 const SLASH_WRAPPED = /^\/(.*)\/([dgimsuy]*)$/;
 
+/**
+ * Cap on titles retained per menu scope for the settings checklist. The cache
+ * is session-only, but a long session browsing many files can still surface
+ * thousands of distinct (often file-specific) titles, so bound it.
+ */
+const SEEN_CAP = 250;
+
 /** True when `entry` is written as a `/…/flags` regex literal. */
 export function isSlashWrapped(entry: string): boolean {
 	return SLASH_WRAPPED.test(entry.trim());
@@ -190,7 +197,12 @@ export default class MenuHiderManager {
 				added = true;
 			}
 		}
-		if (added) this.emitChange();
+		if (!added) return;
+		// Sets iterate in insertion order, so this evicts oldest-seen first.
+		while (set.size > SEEN_CAP) {
+			set.delete(set.values().next().value as string);
+		}
+		this.emitChange();
 	}
 
 	/** Walk up the submenu chain to the nearest tagged ancestor. */

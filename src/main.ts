@@ -91,11 +91,25 @@ export default class CommanderPlugin extends Plugin {
 		// settings checklist). Many titles are file-specific, so this rewrote
 		// data.json on nearly every right-click and churned version-controlled
 		// configs / sync history (#211). The checklist is session-only now;
-		// strip the stale keys from existing configs.
-		// TODO: remove this in a future version.
+		// strip the stale keys from existing configs and persist the removal
+		// once so the shrink lands at upgrade rather than on the next unrelated
+		// settings change. TODO: remove this in a future version.
 		const legacyHide = this.settings.hide as Record<string, unknown>;
-		delete legacyHide.seenEditorMenuItems;
-		delete legacyHide.seenFileMenuItems;
+		if (
+			"seenEditorMenuItems" in legacyHide ||
+			"seenFileMenuItems" in legacyHide
+		) {
+			delete legacyHide.seenEditorMenuItems;
+			delete legacyHide.seenFileMenuItems;
+			try {
+				await this.saveSettings();
+			} catch (e) {
+				console.error(
+					"Commander: could not persist #211 settings cleanup",
+					e
+				);
+			}
+		}
 
 		registerCustomIcons();
 
