@@ -20,8 +20,6 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 		leftRibbon: [],
 		editorMenuItems: [],
 		fileMenuItems: [],
-		seenEditorMenuItems: [],
-		seenFileMenuItems: [],
 	},
 	spacing: 0,
 	advancedToolbar: {

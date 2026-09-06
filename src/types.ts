@@ -42,10 +42,6 @@ export interface CommanderSettings {
 		editorMenuItems: string[];
 		/** Titles/regexes removed from the file right-click menu. */
 		fileMenuItems: string[];
-		/** Menu-item titles observed in editor menus, for the settings checklist. */
-		seenEditorMenuItems: string[];
-		/** Menu-item titles observed in file menus, for the settings checklist. */
-		seenFileMenuItems: string[];
 	};
 	spacing: number;
 	/**

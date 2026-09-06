@@ -13,7 +13,11 @@ import CommanderPlugin from "src/main";
  * the menu is shown, so it works with native menus on or off.
  *
  * The settings checklist is populated by recording the item titles of every
- * real menu that opens (`hide.seen*MenuItems`).
+ * real menu that opens. That record is kept in memory for the current session
+ * only — it is deliberately not persisted, because many menu titles are
+ * file-specific (e.g. "Focus '<file>' in Map View") and writing them to
+ * `data.json` on nearly every right-click churned version-controlled configs
+ * and sync history (issue #211).
  */
 
 export type MenuScope = "editorMenuItems" | "fileMenuItems";
@@ -25,9 +29,6 @@ export interface Matcher {
 }
 
 const SLASH_WRAPPED = /^\/(.*)\/([dgimsuy]*)$/;
-
-/** Most titles seen in one menu scope that we keep persisted. */
-const SEEN_CAP = 250;
 
 /** True when `entry` is written as a `/…/flags` regex literal. */
 export function isSlashWrapped(entry: string): boolean {
@@ -105,25 +106,27 @@ function isMenuItem(x: unknown): x is MenuItem {
 	return !!x && typeof (x as MenuItem).setTitle === "function";
 }
 
-const SEEN_KEY: Record<MenuScope, "seenEditorMenuItems" | "seenFileMenuItems"> = {
-	editorMenuItems: "seenEditorMenuItems",
-	fileMenuItems: "seenFileMenuItems",
-};
-
 export default class MenuHiderManager {
 	private readonly plugin: CommanderPlugin;
 	private matchers: Record<MenuScope, Matcher[]> = {
 		editorMenuItems: [],
 		fileMenuItems: [],
 	};
+	/**
+	 * Titles seen in real menus this session, per scope. Session-only by
+	 * design — see the file header. Feeds the settings checklist alongside the
+	 * user's own persisted entries.
+	 */
+	private readonly seen: Record<MenuScope, Set<string>> = {
+		editorMenuItems: new Set(),
+		fileMenuItems: new Set(),
+	};
 	private readonly changeListeners = new Set<() => void>();
-	private saveTimer: number | null = null;
 
 	public constructor(plugin: CommanderPlugin) {
 		this.plugin = plugin;
 		this.recompile();
 		this.patch();
-		this.plugin.register(() => this.flushSave());
 	}
 
 	/** Rebuild the compiled matcher lists. Call after settings change. */
@@ -144,11 +147,9 @@ export default class MenuHiderManager {
 		(menu as TaggedMenu).__cmdrMenuScope = scope;
 	}
 
-	/** Persisted list of titles ever seen in this menu scope, sorted. */
+	/** Titles seen in this menu scope this session, sorted. */
 	public getSeen(scope: MenuScope): string[] {
-		return [...this.plugin.settings.hide[SEEN_KEY[scope]]].sort((a, b) =>
-			a.localeCompare(b)
-		);
+		return [...this.seen[scope]].sort((a, b) => a.localeCompare(b));
 	}
 
 	/** Subscribe to seen-list changes; returns an unsubscribe function. */
@@ -181,33 +182,15 @@ export default class MenuHiderManager {
 
 	private recordSeen(scope: MenuScope, titles: string[]): void {
 		if (titles.length === 0) return;
-		const list = this.plugin.settings.hide[SEEN_KEY[scope]];
+		const set = this.seen[scope];
 		let added = false;
 		for (const title of titles) {
-			if (!list.includes(title)) {
-				list.push(title);
+			if (!set.has(title)) {
+				set.add(title);
 				added = true;
 			}
 		}
-		if (!added) return;
-		if (list.length > SEEN_CAP) list.splice(0, list.length - SEEN_CAP);
-		this.scheduleSave();
-		this.emitChange();
-	}
-
-	private scheduleSave(): void {
-		if (this.saveTimer !== null) window.clearTimeout(this.saveTimer);
-		this.saveTimer = window.setTimeout(() => {
-			this.saveTimer = null;
-			void this.plugin.saveSettings();
-		}, 800);
-	}
-
-	private flushSave(): void {
-		if (this.saveTimer === null) return;
-		window.clearTimeout(this.saveTimer);
-		this.saveTimer = null;
-		void this.plugin.saveSettings();
+		if (added) this.emitChange();
 	}
 
 	/** Walk up the submenu chain to the nearest tagged ancestor. */

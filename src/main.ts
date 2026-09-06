@@ -86,8 +86,16 @@ export default class CommanderPlugin extends Plugin {
 		this.settings.hide.leftRibbon ??= []; // TODO: remove this in a future version
 		this.settings.hide.editorMenuItems ??= []; // TODO: remove this in a future version
 		this.settings.hide.fileMenuItems ??= []; // TODO: remove this in a future version
-		this.settings.hide.seenEditorMenuItems ??= []; // TODO: remove this in a future version
-		this.settings.hide.seenFileMenuItems ??= []; // TODO: remove this in a future version
+
+		// #209 briefly persisted every menu-item title ever seen (to build the
+		// settings checklist). Many titles are file-specific, so this rewrote
+		// data.json on nearly every right-click and churned version-controlled
+		// configs / sync history (#211). The checklist is session-only now;
+		// strip the stale keys from existing configs.
+		// TODO: remove this in a future version.
+		const legacyHide = this.settings.hide as Record<string, unknown>;
+		delete legacyHide.seenEditorMenuItems;
+		delete legacyHide.seenFileMenuItems;
 
 		registerCustomIcons();
 
