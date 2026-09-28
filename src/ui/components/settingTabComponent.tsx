@@ -340,8 +340,15 @@ export function TabHeader({
 	const wrapper = useRef<HTMLElement>(null);
 
 	const handleScroll = (e: WheelEvent): void => {
+		const el = wrapper.current;
+		// Horizontal gestures (touchpad swipes, shift+wheel) scroll natively
+		if (!el || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+		// Nothing to scroll: let the settings page scroll vertically
+		if (el.scrollWidth <= el.clientWidth) return;
+
 		e.preventDefault();
-		wrapper.current?.scrollBy({ left: e.deltaY > 0 ? 16 : -16 });
+		const unit = e.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1;
+		el.scrollLeft += e.deltaY * unit;
 	};
 
 	useEffect(() => {
