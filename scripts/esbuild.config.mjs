@@ -4,7 +4,7 @@ import builtins from "builtin-modules";
 import alias from "esbuild-plugin-alias";
 import { sassPlugin } from "esbuild-sass-plugin";
 import { createRequire } from "module";
-import { renameSync, copyFileSync, appendFileSync } from "fs";
+import { renameSync, copyFileSync, appendFileSync, existsSync } from "fs";
 import { execSync } from "child_process";
 const require = createRequire(import.meta.url);
 
@@ -104,21 +104,20 @@ const buildOptions = {
 		{
 			name: "Move output",
 			setup(build) {
+				// Optional: copy the build into a separate test vault. Skipped
+				// when that vault doesn't exist (e.g. when this folder is itself
+				// the installed plugin).
+				const target = "../../vault/.obsidian/plugins/cmdr";
+				if (!existsSync(target)) return;
 				build.onEnd(() => {
 					setTimeout(
 						() => {
 							try {
-								copyFileSync(
-									"styles.css",
-									"../../vault/.obsidian/plugins/cmdr/styles.css"
-								);
-								copyFileSync(
-									"main.js",
-									"../../vault/.obsidian/plugins/cmdr/main.js"
-								);
+								copyFileSync("styles.css", `${target}/styles.css`);
+								copyFileSync("main.js", `${target}/main.js`);
 								copyFileSync(
 									"manifest.json",
-									"../../vault/.obsidian/plugins/cmdr/manifest.json"
+									`${target}/manifest.json`
 								);
 							} catch (error) {
 								console.error(error);
