@@ -308,14 +308,44 @@
 }
 
 .cmdr-setting-header {
-	margin-bottom: 24px;
+	--cmdr-fade-left: 0px;
+	--cmdr-fade-right: 0px;
+	margin-bottom: var(--size-4-6);
 	overflow-y: hidden;
 	overflow-x: auto;
+	scrollbar-width: none;
+	// Fade out the edges that have more tabs scrolled past them
+	-webkit-mask-image: linear-gradient(
+		to right,
+		transparent,
+		#000 var(--cmdr-fade-left),
+		#000 calc(100% - var(--cmdr-fade-right)),
+		transparent
+	);
+	mask-image: linear-gradient(
+		to right,
+		transparent,
+		#000 var(--cmdr-fade-left),
+		#000 calc(100% - var(--cmdr-fade-right)),
+		transparent
+	);
+
+	&.cmdr-fade-left {
+		--cmdr-fade-left: var(--size-4-8);
+	}
+
+	&.cmdr-fade-right {
+		--cmdr-fade-right: var(--size-4-8);
+	}
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
 
 	.cmdr-setting-tab-group {
+		position: relative;
 		display: flex;
 		align-items: flex-end;
-		border-bottom: 2px solid var(--background-modifier-border);
 	}
 
 	&.cmdr-mobile .cmdr-setting-tab-group {
@@ -332,39 +362,67 @@
 			transition: color 200ms ease;
 			width: 100%;
 			display: flex;
-			font-weight: 500;
+			font-weight: var(--font-medium);
 			justify-content: space-between;
 
 			&:first-child {
 				margin-left: 0px;
 			}
-
-			&.cmdr-tab-active {
-				transform: none;
-			}
 		}
 	}
 
 	.cmdr-tab {
-		padding: 6px 8px;
-		font-size: 14px;
-		font-weight: 600;
+		padding: var(--size-2-3) var(--size-4-2);
+		font-size: var(--font-ui-small);
+		font-weight: var(--font-semibold);
 		cursor: pointer;
 		white-space: nowrap;
-		border-left: 2px solid transparent;
-		border-right: 2px solid transparent;
+		// Reserves room for the sliding indicator
+		border-bottom: 2px solid transparent;
 
 		&:first-child {
-			margin-left: 6px;
+			margin-left: var(--size-2-3);
+		}
+
+		&:focus-visible {
+			outline: none;
+			border-radius: var(--radius-s);
+			box-shadow: inset 0 0 0 2px var(--background-modifier-border-focus);
+		}
+	}
+
+	// Mobile tabs keep Obsidian's native nav item colors
+	&:not(.cmdr-mobile) .cmdr-tab {
+		color: var(--text-muted);
+		transition: color 150ms ease;
+
+		&:hover {
+			color: var(--text-normal);
 		}
 
 		&.cmdr-tab-active {
-			border-bottom: 2px solid var(--background-primary);
-			transform: translateY(2px);
-			border-radius: 2px;
-			border-left: 2px solid var(--background-modifier-border);
-			border-top: 2px solid var(--background-modifier-border);
-			border-right: 2px solid var(--background-modifier-border);
+			color: var(--interactive-accent);
+		}
+	}
+
+	.cmdr-tab-indicator {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: var(--cmdr-indicator-width, 0);
+		height: 2px;
+		border-radius: 2px;
+		background-color: var(--interactive-accent);
+		pointer-events: none;
+		transform: translateX(var(--cmdr-indicator-x, 0));
+		transition: transform 200ms ease, width 200ms ease;
+
+		&.cmdr-no-transition {
+			transition: none;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
 		}
 	}
 }

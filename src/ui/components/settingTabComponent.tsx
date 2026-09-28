@@ -1,6 +1,12 @@
 import { Platform } from "obsidian";
 import { Fragment, h } from "preact";
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import {
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "preact/hooks";
 import { DEFAULT_SETTINGS } from "src/constants";
 import t from "src/l10n";
 import { Tab } from "src/types";
@@ -14,6 +20,9 @@ import MacroViewer from "./MacroViewer";
 import { SliderComponent, ToggleComponent } from "./settingComponent";
 import TextToolbarIntegrationManager from "src/manager/commands/textToolbarIntegrationManager";
 
+const TAB_PANEL_ID = "cmdr-tab-panel";
+const tabId = (idx: number): string => `cmdr-tab-${idx}`;
+
 export default function settingTabComponent({
 	plugin,
 	mobileMode,
@@ -23,23 +32,6 @@ export default function settingTabComponent({
 }): h.JSX.Element {
 	const [activeTab, setActiveTab] = useState(0);
 	const [open, setOpen] = useState(true);
-
-	const tabToNextTab = ({ key, shiftKey }: KeyboardEvent): void => {
-		if (shiftKey && key === "Tab") {
-			if (activeTab > 0) {
-				setActiveTab((activeTab - 1) % tabs.length);
-			} else {
-				setActiveTab(tabs.length - 1);
-			}
-		} else if (key === "Tab") {
-			setActiveTab((activeTab + 1) % tabs.length);
-		}
-	};
-
-	useEffect(() => {
-		addEventListener("keydown", tabToNextTab);
-		return (): void => removeEventListener("keydown", tabToNextTab);
-	}, [activeTab]);
 
 	//This is used to remove the initial onclick event listener.
 	if (Platform.isMobile) {
@@ -313,6 +305,9 @@ export default function settingTabComponent({
 				class={`cmdr-setting-content ${
 					mobileMode ? "cmdr-mobile" : ""
 				}`}
+				id={TAB_PANEL_ID}
+				role="tabpanel"
+				aria-labelledby={tabId(activeTab)}
 			>
 				{(Platform.isDesktop || !open) && tabs[activeTab].tab}
 
@@ -338,6 +333,16 @@ export function TabHeader({
 	setOpen,
 }: TabHeaderProps): h.JSX.Element {
 	const wrapper = useRef<HTMLElement>(null);
+	const group = useRef<HTMLDivElement>(null);
+	const indicator = useRef<HTMLSpanElement>(null);
+	const indicatorPlaced = useRef(false);
+	const [fadeLeft, setFadeLeft] = useState(false);
+	const [fadeRight, setFadeRight] = useState(false);
+
+	const selectTab = (idx: number): void => {
+		setActiveTab(idx);
+		setOpen(false);
+	};
 
 	const handleScroll = (e: WheelEvent): void => {
 		const el = wrapper.current;
@@ -351,28 +356,112 @@ export function TabHeader({
 		el.scrollLeft += e.deltaY * unit;
 	};
 
+	// Fade an edge only while there are more tabs hidden past it
+	const updateFades = (): void => {
+		const el = wrapper.current;
+		if (!el) return;
+		setFadeLeft(el.scrollLeft > 1);
+		setFadeRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+	};
+
+	const moveIndicator = (animate: boolean): void => {
+		const bar = indicator.current;
+		const tab = group.current?.querySelector<HTMLElement>(".cmdr-tab-active");
+		if (!bar || !tab) return;
+
+		bar.toggleClass("cmdr-no-transition", !animate);
+		bar.setCssProps({
+			"--cmdr-indicator-x": `${tab.offsetLeft}px`,
+			"--cmdr-indicator-width": `${tab.offsetWidth}px`,
+		});
+		if (!animate) {
+			void bar.offsetWidth; // flush the jump before restoring transitions
+			bar.removeClass("cmdr-no-transition");
+		}
+	};
+
 	useEffect(() => {
 		const el = wrapper.current;
 		if (!el || Platform.isMobile) {
 			return;
 		}
 
+		const onResize = (): void => {
+			updateFades();
+			moveIndicator(false);
+		};
+		const observer = new ResizeObserver(onResize);
+		observer.observe(el);
+		if (group.current) observer.observe(group.current);
+
 		el.addEventListener("wheel", handleScroll);
-		return (): void => el.removeEventListener("wheel", handleScroll);
+		el.addEventListener("scroll", updateFades, { passive: true });
+		return (): void => {
+			observer.disconnect();
+			el.removeEventListener("wheel", handleScroll);
+			el.removeEventListener("scroll", updateFades);
+		};
 	}, []);
+
+	useLayoutEffect(() => {
+		if (Platform.isMobile) return;
+		moveIndicator(indicatorPlaced.current);
+		indicatorPlaced.current = true;
+	}, [activeTab]);
 
 	useEffect(
 		() =>
-			document
-				.querySelector(".cmdr-tab-active")
+			wrapper.current
+				?.querySelector(".cmdr-tab-active")
 				?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
 		[activeTab]
 	);
+
+	const handleKeyDown = (e: KeyboardEvent): void => {
+		const els = Array.from(
+			group.current?.querySelectorAll<HTMLElement>(".cmdr-tab") ?? []
+		);
+		const current = els.indexOf(document.activeElement as HTMLElement);
+		if (current === -1) return;
+
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			selectTab(current);
+			return;
+		}
+
+		const prevKey = Platform.isMobile ? "ArrowUp" : "ArrowLeft";
+		const nextKey = Platform.isMobile ? "ArrowDown" : "ArrowRight";
+		let target: number;
+		switch (e.key) {
+			case prevKey:
+				target = (current - 1 + els.length) % els.length;
+				break;
+			case nextKey:
+				target = (current + 1) % els.length;
+				break;
+			case "Home":
+				target = 0;
+				break;
+			case "End":
+				target = els.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		e.preventDefault();
+		els[target].focus();
+		// On mobile, selecting a tab navigates away, so arrows only move focus
+		if (Platform.isDesktop) setActiveTab(target);
+	};
 
 	return (
 		<nav
 			class={`cmdr-setting-header ${
 				Platform.isMobile ? "cmdr-mobile" : ""
+			} ${fadeLeft ? "cmdr-fade-left" : ""} ${
+				fadeRight ? "cmdr-fade-right" : ""
 			}`}
 			ref={wrapper}
 		>
@@ -380,16 +469,22 @@ export function TabHeader({
 				class={`cmdr-setting-tab-group ${
 					Platform.isMobile ? "vertical-tab-header-group-items" : ""
 				}`}
+				ref={group}
+				role="tablist"
+				aria-orientation={Platform.isMobile ? "vertical" : "horizontal"}
+				onKeyDown={handleKeyDown}
 			>
 				{tabs.map((tab, idx) => (
 					<div
 						className={`cmdr-tab ${
 							activeTab === idx ? "cmdr-tab-active" : ""
 						} ${Platform.isMobile ? "vertical-tab-nav-item" : ""}`}
-						onClick={(): void => {
-							setActiveTab(idx);
-							setOpen(false);
-						}}
+						id={tabId(idx)}
+						role="tab"
+						aria-selected={activeTab === idx}
+						aria-controls={TAB_PANEL_ID}
+						tabIndex={activeTab === idx ? 0 : -1}
+						onClick={(): void => selectTab(idx)}
 					>
 						{tab.name}
 						{Platform.isMobile && (
@@ -401,6 +496,13 @@ export function TabHeader({
 						)}
 					</div>
 				))}
+				{Platform.isDesktop && (
+					<span
+						className="cmdr-tab-indicator"
+						ref={indicator}
+						aria-hidden="true"
+					/>
+				)}
 			</div>
 
 			{Platform.isDesktop && <div className="cmdr-fill" />}
