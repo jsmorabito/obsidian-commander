@@ -24,12 +24,19 @@ function modeLabel(mode: string): string {
 		: "This device";
 }
 
+export interface CommandListOptions {
+	/** Show the per-row desktop/mobile mode control (default true). */
+	showMode?: boolean;
+}
+
 export function commandListDefinition(
 	plugin: CommanderPlugin,
 	manager: CommandManagerBase,
 	heading: string,
-	update: () => void
+	update: () => void,
+	options: CommandListOptions = {}
 ): SettingDefinitionList {
+	const showMode = options.showMode ?? true;
 	// Persist + re-apply to the real UI location (ribbon, status bar, ...).
 	const apply = async (rerender: boolean): Promise<void> => {
 		await plugin.saveSettings();
@@ -56,7 +63,7 @@ export function commandListDefinition(
 				// so the list index always matches the underlying array.
 				setting.settingEl.toggleClass(
 					"cmdr-mode-inactive",
-					!isModeActive(pair.mode, plugin)
+					showMode && !isModeActive(pair.mode, plugin)
 				);
 
 				// Rename: commit on blur / Enter, not on every keystroke.
@@ -96,6 +103,8 @@ export function commandListDefinition(
 							await apply(false);
 						})
 				);
+
+				if (!showMode) return;
 
 				// Mode: cycles any -> desktop -> mobile -> this device
 				setting.addExtraButton((btn) =>
