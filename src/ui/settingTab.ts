@@ -178,6 +178,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 				items: [
 					list(textToolbarIntegration, "Text toolbar commands", {
 						showMode: false,
+						showColor: false,
 					}),
 				],
 			},
