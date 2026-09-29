@@ -692,3 +692,8 @@
 		margin-top: 2px;
 	}
 }
+
+// Command rows whose mode doesn't apply to this device (declarative settings spike)
+.cmdr-mode-inactive {
+	opacity: 0.5;
+}
