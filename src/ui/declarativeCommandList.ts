@@ -1,10 +1,15 @@
-import { SettingDefinitionList, SettingDefinitionRender } from "obsidian";
+import {
+	Platform,
+	SettingDefinitionList,
+	SettingDefinitionRender,
+} from "obsidian";
 import CommanderPlugin from "../main";
 import CommandManagerBase from "../manager/commands/commandManager";
 import { CommandIconPair } from "../types";
 import { chooseNewCommand, getCommandFromId, isModeActive } from "../util";
 import ChooseIconModal from "./chooseIconModal";
 import ConfirmDeleteModal from "./confirmDeleteModal";
+import MobileModifyModal from "./mobileModifyModal";
 
 /**
  * SPIKE: shared declarative replacement for `CommandViewer`. Given any
@@ -47,15 +52,44 @@ export function commandListDefinition(
 		if (rerender) update();
 	};
 
+	const modes = ["any", "desktop", "mobile", plugin.app.appId];
+
 	const row = (pair: CommandIconPair): SettingDefinitionRender => {
 		const cmd = getCommandFromId(pair.id, plugin);
 		const owner = plugin.app.plugins.manifests[cmd?.id.split(":")[0] ?? ""];
 
+		// Shared by the inline desktop controls and the mobile edit modal.
+		const rename = (name: string): void => {
+			pair.name = name.trim() || cmd?.name || pair.name;
+			void apply(true);
+		};
+		const chooseIcon = async (): Promise<void> => {
+			const icon = await new ChooseIconModal(plugin).awaitSelection();
+			if (icon && icon !== pair.icon) {
+				pair.icon = icon;
+				await apply(true);
+			}
+		};
+		// With no argument, cycles any -> desktop -> mobile -> this device.
+		const changeMode = (mode?: string): void => {
+			pair.mode =
+				mode || modes[(modes.indexOf(pair.mode) + 1) % modes.length];
+			void apply(true);
+		};
+		const changeColor = (color?: string): void => {
+			pair.color = color;
+			void apply(false);
+		};
+
 		return {
-			// The row title is the underlying command; the editable name is the input.
-			name: cmd?.name ?? pair.name,
+			// Desktop: the row title is the underlying command and the editable
+			// name is the input. Mobile has no inline input, so the title is the
+			// custom name and the command name moves into the description.
+			name: Platform.isMobile ? pair.name : cmd?.name ?? pair.name,
 			desc: cmd
-				? `Added by ${owner?.name ?? "Obsidian"}.`
+				? Platform.isMobile && pair.name !== cmd.name
+					? `${cmd.name} · Added by ${owner?.name ?? "Obsidian"}.`
+					: `Added by ${owner?.name ?? "Obsidian"}.`
 				: "This Command is not available on this device.",
 			render: (setting): void => {
 				if (!cmd) {
@@ -69,6 +103,27 @@ export function commandListDefinition(
 					showMode && !isModeActive(pair.mode, plugin)
 				);
 
+				// Mobile: one compact edit button opens the existing modal
+				// (rename, icon, mode, color) instead of four cramped controls.
+				if (Platform.isMobile) {
+					setting.addExtraButton((btn) =>
+						btn
+							.setIcon("lucide-pencil")
+							.setTooltip("Edit")
+							.onClick(() =>
+								new MobileModifyModal(
+									plugin,
+									pair,
+									rename,
+									() => void chooseIcon(),
+									changeMode,
+									changeColor
+								).open()
+							)
+					);
+					return;
+				}
+
 				// Rename: commit on blur / Enter, not on every keystroke.
 				setting.addText((text) => {
 					text.setValue(pair.name).setPlaceholder(cmd.name);
@@ -76,10 +131,9 @@ export function commandListDefinition(
 						if (e.key === "Enter") text.inputEl.blur();
 					});
 					text.inputEl.addEventListener("blur", () => {
-						const next = text.getValue().trim() || cmd.name;
-						if (next === pair.name) return;
-						pair.name = next;
-						void apply(true);
+						if (text.getValue().trim() !== pair.name) {
+							rename(text.getValue());
+						}
 					});
 				});
 
@@ -87,48 +141,26 @@ export function commandListDefinition(
 					btn
 						.setIcon(pair.icon)
 						.setTooltip("Choose new icon")
-						.onClick(async () => {
-							const icon = await new ChooseIconModal(
-								plugin
-							).awaitSelection();
-							if (icon && icon !== pair.icon) {
-								pair.icon = icon;
-								await apply(true);
-							}
-						})
+						.onClick(() => void chooseIcon())
 				);
 
 				if (showColor) {
 					setting.addColorPicker((picker) =>
 						picker
 							.setValue(pair.color ?? "#000000")
-							.onChange(async (value) => {
-								pair.color = value;
-								await apply(false);
-							})
+							.onChange((value) => changeColor(value))
 					);
 				}
 
 				if (!showMode) return;
 
-				// Mode: cycles any -> desktop -> mobile -> this device
 				setting.addExtraButton((btn) =>
 					btn
 						.setIcon(MODE_ICONS[pair.mode] ?? "airplay")
 						.setTooltip(
 							`Mode: ${modeLabel(pair.mode)} (click to change)`
 						)
-						.onClick(async () => {
-							const modes = [
-								"any",
-								"desktop",
-								"mobile",
-								plugin.app.appId,
-							];
-							const idx = modes.indexOf(pair.mode);
-							pair.mode = modes[(idx + 1) % modes.length];
-							await apply(true);
-						})
+						.onClick(() => changeMode())
 				);
 			},
 		};
