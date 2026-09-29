@@ -2,10 +2,12 @@ import {
 	Platform,
 	PluginSettingTab,
 	SettingDefinitionItem,
+	SettingGroupItem,
 } from "obsidian";
 import { h, render } from "preact";
 import CommanderPlugin from "../main";
 import CommandManagerBase from "../manager/commands/commandManager";
+import About from "./components/About";
 import settingTabComponent from "./components/settingTabComponent";
 import { updateSpacing } from "../util";
 import TextToolbarIntegrationManager from "../manager/commands/textToolbarIntegrationManager";
@@ -94,7 +96,29 @@ export default class CommanderSettingTab extends PluginSettingTab {
 				],
 			},
 			...this.commandPages(),
+			{
+				type: "group",
+				items: [this.aboutRow()],
+			},
 		];
+	}
+
+	/**
+	 * The About block (logo, credits, feedback/donate links, version). Has no
+	 * declarative equivalent, so it's a `render` row that mounts the existing
+	 * Preact component and unmounts it on teardown.
+	 */
+	private aboutRow(): SettingGroupItem {
+		return {
+			name: "About",
+			searchable: false,
+			render: (setting): (() => void) => {
+				setting.settingEl.empty();
+				setting.settingEl.addClass("cmdr-about-row");
+				render(h(About, { manifest: this.plugin.manifest }), setting.settingEl);
+				return (): void => render(null, setting.settingEl);
+			},
+		};
 	}
 
 	/** One page per command location; each is a shared list definition. */
