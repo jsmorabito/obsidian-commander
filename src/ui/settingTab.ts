@@ -5,9 +5,18 @@ import {
 } from "obsidian";
 import { h, render } from "preact";
 import CommanderPlugin from "../main";
+import CommandManagerBase from "../manager/commands/commandManager";
 import settingTabComponent from "./components/settingTabComponent";
 import { updateSpacing } from "../util";
 import { commandListDefinition } from "./declarativeCommandList";
+import {
+	isHideKey,
+	isShown,
+	menuHiderItems,
+	ribbonHiderPage,
+	setShown,
+	statusbarHiderPage,
+} from "./declarativeHiders";
 
 /**
  * SPIKE: declarative settings (Obsidian 1.13+). Throwaway experiment.
@@ -24,10 +33,15 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	}
 
 	public getControlValue(key: string): unknown {
+		if (isHideKey(key)) return isShown(this.plugin, key);
 		return (this.plugin.settings as unknown as Record<string, unknown>)[key];
 	}
 
 	public async setControlValue(key: string, value: unknown): Promise<void> {
+		if (isHideKey(key)) {
+			await setShown(this.plugin, key, value as boolean);
+			return;
+		}
 		(this.plugin.settings as unknown as Record<string, unknown>)[key] = value;
 		if (key === "spacing") updateSpacing(value as number);
 		if (key === "showAddCommand") await this.plugin.manager.pageHeader.reorder();
@@ -69,20 +83,23 @@ export default class CommanderSettingTab extends PluginSettingTab {
 
 	/** One page per command location; each is a shared list definition. */
 	private commandPages(): SettingDefinitionItem[] {
-		const { leftRibbon, statusBar } = this.plugin.manager;
+		const { leftRibbon, statusBar, editorMenu, fileMenu } =
+			this.plugin.manager;
 		const update = (): void => this.update();
+		const list = (
+			manager: CommandManagerBase,
+			heading: string
+		): SettingDefinitionItem =>
+			commandListDefinition(this.plugin, manager, heading, update);
+
 		return [
 			{
 				type: "page",
 				name: "Left Ribbon",
 				desc: "Commands shown in the left ribbon",
 				items: [
-					commandListDefinition(
-						this.plugin,
-						leftRibbon,
-						"Ribbon commands",
-						update
-					),
+					list(leftRibbon, "Ribbon commands"),
+					ribbonHiderPage(this.plugin),
 				],
 			},
 			{
@@ -90,12 +107,26 @@ export default class CommanderSettingTab extends PluginSettingTab {
 				name: "Statusbar",
 				desc: "Commands shown in the status bar",
 				items: [
-					commandListDefinition(
-						this.plugin,
-						statusBar,
-						"Statusbar commands",
-						update
-					),
+					list(statusBar, "Statusbar commands"),
+					statusbarHiderPage(this.plugin),
+				],
+			},
+			{
+				type: "page",
+				name: "Editor Menu",
+				desc: "Commands in the editor right-click menu",
+				items: [
+					list(editorMenu, "Editor menu commands"),
+					...menuHiderItems(this.plugin, "editorMenuItems", update),
+				],
+			},
+			{
+				type: "page",
+				name: "File Menu",
+				desc: "Commands in the file right-click menu",
+				items: [
+					list(fileMenu, "File menu commands"),
+					...menuHiderItems(this.plugin, "fileMenuItems", update),
 				],
 			},
 		];
