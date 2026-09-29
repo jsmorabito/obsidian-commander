@@ -83,7 +83,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 
 	/** One page per command location; each is a shared list definition. */
 	private commandPages(): SettingDefinitionItem[] {
-		const { leftRibbon, statusBar, editorMenu, fileMenu } =
+		const { leftRibbon, statusBar, editorMenu, fileMenu, pageHeader, explorerManager } =
 			this.plugin.manager;
 		const update = (): void => this.update();
 		const list = (
@@ -109,6 +109,32 @@ export default class CommanderSettingTab extends PluginSettingTab {
 				items: [
 					list(statusBar, "Statusbar commands"),
 					statusbarHiderPage(this.plugin),
+				],
+			},
+			{
+				type: "page",
+				name: "Page Header",
+				desc: "Commands shown in the note header",
+				items: [
+					list(pageHeader, "Page header commands"),
+				],
+			},
+			{
+				type: "page",
+				name: "Explorer",
+				desc: "Commands shown in the file explorer",
+				items: [
+					list(explorerManager, "Explorer commands"),
+					{
+						type: "group",
+						heading: "Warning",
+						items: [
+							{
+								name: "Explorer focus",
+								desc: "When clicking on a Command in the Explorer, the Explorer view will become focused. This might interfere with Commands that are supposed to be executed on an active File/Explorer.",
+							},
+						],
+					},
 				],
 			},
 			{
