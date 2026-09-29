@@ -3,7 +3,9 @@ import { CommandIconPair } from "src/types";
 import CommandManagerBase from "./commandManager";
 
 interface TextToolbarAPI {
-	setCommands(_cmds: { id: string; icon: string; name: string }[]): void;
+	setCommands(
+		_cmds: { id: string; icon: string; name: string; color?: string }[]
+	): void;
 }
 
 function getTextToolbarAPI(plugin: CommanderPlugin): TextToolbarAPI | undefined {
@@ -21,7 +23,14 @@ export default class TextToolbarIntegrationManager extends CommandManagerBase {
 	private sync(): void {
 		const api = getTextToolbarAPI(this.plugin);
 		if (!api) return;
-		api.setCommands(this.pairs.map(p => ({ id: p.id, icon: p.icon, name: p.name })));
+		api.setCommands(
+			this.pairs.map((p) => ({
+				id: p.id,
+				icon: p.icon,
+				name: p.name,
+				color: p.color,
+			}))
+		);
 	}
 
 	public static isAvailable(plugin: CommanderPlugin): boolean {

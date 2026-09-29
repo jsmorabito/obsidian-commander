@@ -8,7 +8,12 @@ import CommanderPlugin from "../main";
 import CommandManagerBase from "../manager/commands/commandManager";
 import settingTabComponent from "./components/settingTabComponent";
 import { updateSpacing } from "../util";
-import { commandListDefinition } from "./declarativeCommandList";
+import TextToolbarIntegrationManager from "../manager/commands/textToolbarIntegrationManager";
+import {
+	CommandListOptions,
+	commandListDefinition,
+} from "./declarativeCommandList";
+import { macrosPage } from "./declarativeMacros";
 import {
 	isHideKey,
 	isShown,
@@ -83,14 +88,22 @@ export default class CommanderSettingTab extends PluginSettingTab {
 
 	/** One page per command location; each is a shared list definition. */
 	private commandPages(): SettingDefinitionItem[] {
-		const { leftRibbon, statusBar, editorMenu, fileMenu, pageHeader, explorerManager } =
-			this.plugin.manager;
+		const {
+			leftRibbon,
+			statusBar,
+			editorMenu,
+			fileMenu,
+			pageHeader,
+			explorerManager,
+			textToolbarIntegration,
+		} = this.plugin.manager;
 		const update = (): void => this.update();
 		const list = (
 			manager: CommandManagerBase,
-			heading: string
+			heading: string,
+			options?: CommandListOptions
 		): SettingDefinitionItem =>
-			commandListDefinition(this.plugin, manager, heading, update);
+			commandListDefinition(this.plugin, manager, heading, update, options);
 
 		return [
 			{
@@ -155,6 +168,20 @@ export default class CommanderSettingTab extends PluginSettingTab {
 					...menuHiderItems(this.plugin, "fileMenuItems", update),
 				],
 			},
+			{
+				type: "page",
+				name: "Text Toolbar",
+				desc: "Commands in the Text Formatting Toolbar plugin",
+				// Only when the external Text Toolbar plugin exposes its API.
+				visible: (): boolean =>
+					TextToolbarIntegrationManager.isAvailable(this.plugin),
+				items: [
+					list(textToolbarIntegration, "Text toolbar commands", {
+						showMode: false,
+					}),
+				],
+			},
+			macrosPage(this.plugin, update),
 		];
 	}
 
