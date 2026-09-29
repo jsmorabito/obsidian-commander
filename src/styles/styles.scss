@@ -697,3 +697,18 @@
 .cmdr-mode-inactive {
 	opacity: 0.5;
 }
+
+// About block mounted inside a declarative settings row (spike)
+.setting-item.cmdr-about-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	padding: var(--size-4-8) 0;
+
+	// The standalone About has bottom padding for the old tab layout; drop it
+	// so the content sits in the middle of the block.
+	.cmdr-about {
+		padding-bottom: 0;
+	}
+}
