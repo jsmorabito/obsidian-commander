@@ -15,6 +15,12 @@ import {
 } from "./declarativeCommandList";
 import { macrosPage } from "./declarativeMacros";
 import {
+	getToolbarValue,
+	isToolbarKey,
+	setToolbarValue,
+	toolbarPage,
+} from "./declarativeToolbar";
+import {
 	isHideKey,
 	isShown,
 	menuHiderItems,
@@ -38,11 +44,16 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	}
 
 	public getControlValue(key: string): unknown {
+		if (isToolbarKey(key)) return getToolbarValue(this.plugin, key);
 		if (isHideKey(key)) return isShown(this.plugin, key);
 		return (this.plugin.settings as unknown as Record<string, unknown>)[key];
 	}
 
 	public async setControlValue(key: string, value: unknown): Promise<void> {
+		if (isToolbarKey(key)) {
+			await setToolbarValue(this.plugin, key, value);
+			return;
+		}
 		if (isHideKey(key)) {
 			await setShown(this.plugin, key, value as boolean);
 			return;
@@ -182,6 +193,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 					}),
 				],
 			},
+			toolbarPage(this.plugin, update),
 			macrosPage(this.plugin, update),
 		];
 	}
