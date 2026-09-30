@@ -64,9 +64,12 @@ export function commandListDefinition(
 		);
 
 		// Shared by the inline desktop controls and the mobile edit modal.
-		const rename = (name: string): void => {
+		// The inline input doesn't need a re-render (the desktop row title is the
+		// command's own name), and re-rendering on blur would swallow the click
+		// that caused the blur; the mobile modal changes the row title, so it does.
+		const rename = (name: string, rerender = true): void => {
 			pair.name = name.trim() || cmd?.name || pair.name;
-			void apply(true);
+			void apply(rerender);
 		};
 		const chooseIcon = async (): Promise<void> => {
 			const icon = await new ChooseIconModal(plugin).awaitSelection();
@@ -74,6 +77,8 @@ export function commandListDefinition(
 				pair.icon = icon;
 				await apply(true);
 			}
+			// MobileModifyComponent re-renders its icon only on this event.
+			dispatchEvent(new Event("cmdr-icon-changed"));
 		};
 		// With no argument, cycles any -> desktop -> mobile -> this device.
 		const changeMode = (mode?: string): void => {
@@ -137,7 +142,7 @@ export function commandListDefinition(
 					});
 					text.inputEl.addEventListener("blur", () => {
 						if (text.getValue().trim() !== pair.name) {
-							rename(text.getValue());
+							rename(text.getValue(), false);
 						}
 					});
 				});
