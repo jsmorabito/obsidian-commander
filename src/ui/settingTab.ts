@@ -10,6 +10,7 @@ import CommandManagerBase from "../manager/commands/commandManager";
 import About from "./components/About";
 import settingTabComponent from "./components/settingTabComponent";
 import { updateSpacing } from "../util";
+import t from "../l10n";
 import TextToolbarIntegrationManager from "../manager/commands/textToolbarIntegrationManager";
 import {
 	CommandListOptions,
@@ -70,21 +71,25 @@ export default class CommanderSettingTab extends PluginSettingTab {
 		return [
 			{
 				type: "group",
-				heading: "General",
+				heading: t("General"),
 				items: [
 					{
-						name: "Always ask before removing?",
-						desc: "Always show a Popup to confirm deletion of a Command.",
+						name: t("Always ask before removing?"),
+						desc: t(
+							"Always show a Popup to confirm deletion of a Command."
+						),
 						control: { type: "toggle", key: "confirmDeletion" },
 					},
 					{
-						name: 'Show "Add Command" Button',
-						desc: 'Show the "Add Command" Button in every Menu.',
+						name: t('Show "Add Command" Button'),
+						desc: t('Show the "Add Command" Button in every Menu.'),
 						control: { type: "toggle", key: "showAddCommand" },
 					},
 					{
-						name: "Choose custom spacing for Command Buttons",
-						desc: "Change the spacing between commands.",
+						name: t("Choose custom spacing for Command Buttons"),
+						desc: t(
+							"Change the spacing between commands. You can set different values on mobile and desktop."
+						),
 						control: {
 							type: "slider",
 							key: "spacing",
@@ -110,7 +115,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	 */
 	private aboutRow(): SettingGroupItem {
 		return {
-			name: "About",
+			name: t("About"),
 			searchable: false,
 			render: (setting): (() => void) => {
 				setting.settingEl.empty();
@@ -143,43 +148,45 @@ export default class CommanderSettingTab extends PluginSettingTab {
 		return [
 			{
 				type: "page",
-				name: "Left Ribbon",
-				desc: "Commands shown in the left ribbon",
+				name: t("Left Ribbon"),
+				desc: t("Commands shown in the left ribbon"),
 				items: [
-					list(leftRibbon, "Ribbon commands"),
+					list(leftRibbon, t("Ribbon commands")),
 					ribbonHiderPage(this.plugin),
 				],
 			},
 			{
 				type: "page",
-				name: "Statusbar",
-				desc: "Commands shown in the status bar",
+				name: t("Statusbar"),
+				desc: t("Commands shown in the status bar"),
 				items: [
-					list(statusBar, "Statusbar commands"),
+					list(statusBar, t("Statusbar commands")),
 					statusbarHiderPage(this.plugin),
 				],
 			},
 			{
 				type: "page",
-				name: "Page Header",
-				desc: "Commands shown in the note header",
+				name: t("Page Header"),
+				desc: t("Commands shown in the note header"),
 				items: [
-					list(pageHeader, "Page header commands"),
+					list(pageHeader, t("Page header commands")),
 				],
 			},
 			{
 				type: "page",
-				name: "Explorer",
-				desc: "Commands shown in the file explorer",
+				name: t("Explorer"),
+				desc: t("Commands shown in the file explorer"),
 				items: [
-					list(explorerManager, "Explorer commands"),
+					list(explorerManager, t("Explorer commands")),
 					{
 						type: "group",
-						heading: "Warning",
+						heading: t("Warning"),
 						items: [
 							{
-								name: "Explorer focus",
-								desc: "When clicking on a Command in the Explorer, the Explorer view will become focused. This might interfere with Commands that are supposed to be executed on an active File/Explorer.",
+								name: t("Explorer focus"),
+								desc: t(
+									"When clicking on a Command in the Explorer, the Explorer view will become focused. This might interfere with Commands that are supposed to be executed on an active File/Explorer."
+								),
 							},
 						],
 					},
@@ -187,31 +194,31 @@ export default class CommanderSettingTab extends PluginSettingTab {
 			},
 			{
 				type: "page",
-				name: "Editor Menu",
-				desc: "Commands in the editor right-click menu",
+				name: t("Editor Menu"),
+				desc: t("Commands in the editor right-click menu"),
 				items: [
-					list(editorMenu, "Editor menu commands"),
+					list(editorMenu, t("Editor menu commands")),
 					...menuHiderItems(this.plugin, "editorMenuItems", update),
 				],
 			},
 			{
 				type: "page",
-				name: "File Menu",
-				desc: "Commands in the file right-click menu",
+				name: t("File Menu"),
+				desc: t("Commands in the file right-click menu"),
 				items: [
-					list(fileMenu, "File menu commands"),
+					list(fileMenu, t("File menu commands")),
 					...menuHiderItems(this.plugin, "fileMenuItems", update),
 				],
 			},
 			{
 				type: "page",
-				name: "Text Toolbar",
-				desc: "Commands in the Text Formatting Toolbar plugin",
+				name: t("Text Toolbar"),
+				desc: t("Commands in the Text Formatting Toolbar plugin"),
 				// Only when the external Text Toolbar plugin exposes its API.
 				visible: (): boolean =>
 					TextToolbarIntegrationManager.isAvailable(this.plugin),
 				items: [
-					list(textToolbarIntegration, "Text toolbar commands", {
+					list(textToolbarIntegration, t("Text toolbar commands"), {
 						showMode: false,
 						showColor: false,
 					}),

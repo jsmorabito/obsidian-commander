@@ -4,6 +4,7 @@ import { Macro } from "../types";
 import { updateMacroCommands } from "../util";
 import MacroBuilderModal from "./components/MacroBuilderModal";
 import ConfirmDeleteModal from "./confirmDeleteModal";
+import t from "../l10n";
 
 /**
  * SPIKE: declarative replacement for `MacroViewer.tsx`. Only the list is
@@ -32,21 +33,26 @@ export function macrosPage(
 
 	return {
 		type: "page",
-		name: "Macros",
-		desc: "Sequences of commands you can run as one",
+		name: t("Macros"),
+		desc: t("Sequences of commands you can run as one"),
 		items: [
 			{
 				type: "list",
-				heading: "Macros",
-				emptyState: "No Macros yet! Add one with the + button.",
+				heading: t("Macros"),
+				emptyState: `${t("No Macros yet!")} ${t(
+					"Would you like to add one now?"
+				)}`,
 				items: macros.map((macro, idx) => ({
 					name: macro.name,
-					desc: `${macro.macro.length} Actions`,
+					desc: t("{{count}} Actions").replace(
+						"{{count}}",
+						String(macro.macro.length)
+					),
 					render: (setting): void => {
 						setting.addExtraButton((btn) =>
 							btn
 								.setIcon("lucide-pencil")
-								.setTooltip("Edit Macro")
+								.setTooltip(t("Edit Macro"))
 								.onClick(() => openBuilder(macro, idx))
 						);
 					},
@@ -69,7 +75,7 @@ export function macrosPage(
 					})();
 				},
 				addItem: {
-					name: "Add Macro",
+					name: t("Add Macro"),
 					action: (): void =>
 						openBuilder({ name: "", macro: [], icon: "star" }),
 				},

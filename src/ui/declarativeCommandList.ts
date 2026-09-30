@@ -10,6 +10,7 @@ import { chooseNewCommand, getCommandFromId, isModeActive } from "../util";
 import ChooseIconModal from "./chooseIconModal";
 import ConfirmDeleteModal from "./confirmDeleteModal";
 import MobileModifyModal from "./mobileModifyModal";
+import t from "../l10n";
 
 /**
  * SPIKE: shared declarative replacement for `CommandViewer`. Given any
@@ -26,7 +27,7 @@ const MODE_ICONS: Record<string, string> = {
 function modeLabel(mode: string): string {
 	return /desktop|mobile|any/.test(mode)
 		? mode[0].toUpperCase() + mode.substring(1)
-		: "This device";
+		: t("This device");
 }
 
 export interface CommandListOptions {
@@ -57,6 +58,10 @@ export function commandListDefinition(
 	const row = (pair: CommandIconPair): SettingDefinitionRender => {
 		const cmd = getCommandFromId(pair.id, plugin);
 		const owner = plugin.app.plugins.manifests[cmd?.id.split(":")[0] ?? ""];
+		const addedBy = t("Added by {{plugin_name}}.").replace(
+			"{{plugin_name}}",
+			owner?.name ?? "Obsidian"
+		);
 
 		// Shared by the inline desktop controls and the mobile edit modal.
 		const rename = (name: string): void => {
@@ -88,9 +93,9 @@ export function commandListDefinition(
 			name: Platform.isMobile ? pair.name : cmd?.name ?? pair.name,
 			desc: cmd
 				? Platform.isMobile && pair.name !== cmd.name
-					? `${cmd.name} · Added by ${owner?.name ?? "Obsidian"}.`
-					: `Added by ${owner?.name ?? "Obsidian"}.`
-				: "This Command is not available on this device.",
+					? `${cmd.name} · ${addedBy}`
+					: addedBy
+				: t("This Command is not available on this device."),
 			render: (setting): void => {
 				if (!cmd) {
 					setting.setClass("mod-warning");
@@ -109,7 +114,7 @@ export function commandListDefinition(
 					setting.addExtraButton((btn) =>
 						btn
 							.setIcon("lucide-pencil")
-							.setTooltip("Edit")
+							.setTooltip(t("Edit"))
 							.onClick(() =>
 								new MobileModifyModal(
 									plugin,
@@ -140,7 +145,7 @@ export function commandListDefinition(
 				setting.addExtraButton((btn) =>
 					btn
 						.setIcon(pair.icon)
-						.setTooltip("Choose new icon")
+						.setTooltip(t("Choose new"))
 						.onClick(() => void chooseIcon())
 				);
 
@@ -158,7 +163,10 @@ export function commandListDefinition(
 					btn
 						.setIcon(MODE_ICONS[pair.mode] ?? "airplay")
 						.setTooltip(
-							`Mode: ${modeLabel(pair.mode)} (click to change)`
+							t("Change Mode (Currently: {{current_mode}})").replace(
+								"{{current_mode}}",
+								modeLabel(pair.mode)
+							)
 						)
 						.onClick(() => changeMode())
 				);
@@ -169,7 +177,9 @@ export function commandListDefinition(
 	return {
 		type: "list",
 		heading,
-		emptyState: "No commands added yet.",
+		emptyState: `${t("No commands here!")} ${t(
+			"Would you like to add one now?"
+		)}`,
 		items: manager.pairs.map(row),
 		onDelete: (index): void => {
 			void (async (): Promise<void> => {
@@ -191,7 +201,7 @@ export function commandListDefinition(
 			void apply(false);
 		},
 		addItem: {
-			name: "Add command",
+			name: t("Add command"),
 			action: (): void => {
 				void (async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
