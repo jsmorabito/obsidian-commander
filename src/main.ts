@@ -18,7 +18,6 @@ import {
 } from "./manager/commands";
 import { Action, CommanderSettings } from "./types";
 import CommanderSettingTab from "./ui/settingTab";
-import SettingTabModal from "./ui/settingTabModal";
 
 import "./styles/styles.scss";
 import "./styles/advanced-toolbar.scss";
@@ -134,7 +133,10 @@ export default class CommanderPlugin extends Plugin {
 		this.addCommand({
 			name: t("Open Commander Settings"),
 			id: "open-commander-settings",
-			callback: () => new SettingTabModal(this).open(),
+			callback: () => {
+				this.app.setting.open();
+				this.app.setting.openTabById(this.manifest.id);
+			},
 		});
 
 		const applyEditorMenu =

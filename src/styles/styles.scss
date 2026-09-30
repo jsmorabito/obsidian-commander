@@ -19,7 +19,6 @@
 	position: relative;
 }
 
-
 .cmdr-removing {
 	transform: translateX(100%);
 	z-index: 0;
@@ -29,38 +28,11 @@
 	transform: scale(0%);
 }
 
-.cmdr-setting-title {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-
-	h1 {
-		font-weight: 900;
-		margin-top: 6px;
-		margin-bottom: 12px;
-	}
-}
-
-.cmdr-option-setting-name {
-	margin-left: 0.8ex;
-}
-
-.cmdr-base-component {
-	padding: 0px 20px;
-	margin-bottom: -18px;
-}
-
 .cmdr-menu-item {
 	display: flex;
 }
 
 .cmdr-slider .clickable-icon.is-disabled {
-	opacity: 0.35;
-	cursor: default;
-	pointer-events: none;
-}
-
-.cmdr-advanced-toolbar-settings .extra-setting-button.is-disabled {
 	opacity: 0.35;
 	cursor: default;
 	pointer-events: none;
@@ -104,25 +76,6 @@
 	z-index: 100;
 }
 
-.cmdr-mobile .cmdr-credits {
-	place-content: center;
-}
-
-.cmdr-fill {
-	border: 2px solid transparent;
-	width: 100%;
-}
-
-.cmdr-icon {
-	height: 20px;
-	align-self: center;
-}
-
-.cmdr-setting-modal > .modal {
-	height: 60vh;
-	width: 80vw;
-}
-
 .cmdr-editable {
 	display: inline-block;
 
@@ -133,119 +86,6 @@
 		background-color: transparent !important;
 		border-bottom: 1px solid var(--interactive-accent);
 		border-radius: 0;
-	}
-}
-.cmdr-setting-content {
-	height: calc(100% - 10rem);
-
-	.setting-item:first {
-		border-top: none;
-	}
-}
-
-.cmdr-commands-empty {
-	display: flex;
-	place-items: center;
-	flex-flow: column;
-	margin: 2.5rem 0 1.25rem 0;
-
-	place-content: center;
-
-	svg {
-		width: 100%;
-	}
-
-	h3 {
-		margin: 8px 0px;
-		font-weight: 900;
-	}
-}
-
-.cmdr-sep-con:not(:empty) {
-	background-color: var(--background-primary);
-	border: 1px solid var(--background-modifier-border);
-	padding: 12px;
-	border-radius: 12px;
-
-	.setting-item:first-of-type {
-		padding-top: 0;
-	}
-	.setting-item:last-of-type {
-		padding-bottom: 0;
-	}
-
-	.cmdr-callout-warning {
-		padding: var(--callout-title-padding);
-		display: flex;
-		gap: var(--size-4-1);
-		font-size: var(--callout-title-size);
-		color: rgb(var(--callout-color));
-		line-height: var(--line-height-tight);
-		font-weight: bold;
-	}
-
-	p.cmdr-warning-description {
-		margin: 8px 0;
-	}
-}
-
-.cmdr-accordion {
-	margin-bottom: 16px;
-
-	.cmdr-accordion-chevron {
-		margin-left: 0;
-		margin-right: 4px;
-		height: 24px;
-		> svg {
-			transition: all 0.25s ease;
-		}
-	}
-
-	.cmdr-accordion-content {
-		max-height: 1000px;
-		transition: all 0.3s ease-in-out;
-		overflow: hidden;
-		margin-left: 14px;
-		padding-left: 14px;
-
-		.setting-item {
-			padding-top: 12px;
-		}
-	}
-
-	&[aria-expanded="false"] {
-		.cmdr-accordion-chevron > svg {
-			transform: rotate(-90deg);
-		}
-
-		.cmdr-accordion-content {
-			max-height: 0 !important;
-			transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
-		}
-	}
-
-	.cmdr-accordion-header {
-		display: flex;
-		cursor: var(--cursor);
-
-		span {
-			font-weight: 600;
-			margin-top: 0;
-			align-self: end;
-		}
-	}
-}
-
-.cmdr-add-new-wrapper {
-	width: 100%;
-	margin-top: 12px;
-	margin-bottom: 2rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-
-	button {
-		margin: 0 24px;
 	}
 }
 
@@ -265,126 +105,6 @@
 .cmdr-page-header {
 	// place commander buttons to the left of view and Obsidian buttons
 	order: -1000;
-}
-
-.cmdr-macro-builder {
-	.modal {
-		height: 80vh;
-		width: 95vw;
-		padding: 0px;
-	}
-
-	.modal-close-button {
-		z-index: 99;
-	}
-
-	.modal-content {
-		margin-top: 0px;
-	}
-
-	.cmdr-macro-icon {
-		display: flex;
-		justify-content: center;
-	}
-
-	.cmdr-macro-control {
-		position: absolute;
-		z-index: 5;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		width: 3em;
-		top: 0;
-
-		.cmdr-macro-button {
-			background-color: var(--background-secondary-alt);
-			aspect-ratio: 1;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			border-radius: 2px;
-			outline: 1px solid var(--background-modifier-border);
-			padding: 2px;
-		}
-	}
-}
-
-.cmdr-setting-header {
-	margin-bottom: 24px;
-	overflow-y: hidden;
-	overflow-x: auto;
-
-	.cmdr-setting-tab-group {
-		display: flex;
-		align-items: flex-end;
-		border-bottom: 2px solid var(--background-modifier-border);
-	}
-
-	&.cmdr-mobile .cmdr-setting-tab-group {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		border: none;
-
-		.cmdr-tab {
-			border-left: none !important;
-			border-right: none !important;
-			border-top: none !important;
-			transform: none;
-			transition: color 200ms ease;
-			width: 100%;
-			display: flex;
-			font-weight: 500;
-			justify-content: space-between;
-
-			&:first-child {
-				margin-left: 0px;
-			}
-
-			&.cmdr-tab-active {
-				transform: none;
-			}
-		}
-	}
-
-	.cmdr-tab {
-		padding: 6px 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		white-space: nowrap;
-		border-left: 2px solid transparent;
-		border-right: 2px solid transparent;
-
-		&:first-child {
-			margin-left: 6px;
-		}
-
-		&.cmdr-tab-active {
-			border-bottom: 2px solid var(--background-primary);
-			transform: translateY(2px);
-			border-radius: 2px;
-			border-left: 2px solid var(--background-modifier-border);
-			border-top: 2px solid var(--background-modifier-border);
-			border-right: 2px solid var(--background-modifier-border);
-		}
-	}
-}
-
-.is-tablet .cmdr-tab {
-	border: none !important;
-	margin-bottom: 2px;
-	padding: 10px;
-	font-size: 1.08em;
-	display: flex;
-	align-items: center;
-	.cmdr-block {
-		display: flex;
-		align-items: center;
-	}
 }
 
 .cmdr-mobile-modify-grid {
@@ -480,29 +200,6 @@
 	}
 }
 
-.cmdr-icon.clickable-icon.mod-warning {
-	cursor: default;
-}
-
-.cmdr-hider-title {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	h3 {
-		margin-top: 0;
-		margin-bottom: 8px;
-		font-weight: 900;
-	}
-
-	p {
-		margin-top: 0;
-		margin-bottom: 26px;
-		width: 50%;
-		text-align: center;
-	}
-}
-
 .setting-item-control .cmdr-editable {
 	width: 2em;
 	text-align: center;
@@ -547,22 +244,6 @@
 
 	.side-dock-ribbon-action:not(:last-child) {
 		margin-bottom: var(--cmdr-spacing);
-	}
-}
-
-.cmdr-cta {
-	position: relative;
-
-	&::after {
-		content: "";
-		position: absolute;
-		top: -10%;
-		width: 104%;
-		left: -2%;
-		height: 120%;
-		outline: 2px solid var(--color-accent);
-		border-radius: 1em;
-		pointer-events: none;
 	}
 }
 
@@ -640,65 +321,16 @@
 	gap: 8px;
 }
 
-.cmdr-mm-action-text {
-	opacity: 0;
-}
-
 .cmdr-mm-action-options {
 	display: flex;
 }
 
-.cmdr-menu-hider-description {
-	margin: 0 0 12px;
-	font-size: var(--font-ui-smaller);
-	color: var(--text-muted);
-
-	code {
-		font-size: var(--font-smallest);
-	}
-}
-
-.cmdr-menu-hider-add {
-	display: flex;
-	gap: 8px;
-	margin-bottom: 8px;
-
-	input {
-		flex: 1;
-	}
-}
-
-.cmdr-menu-hider-row {
-	.setting-item-info code {
-		font-size: var(--font-ui-smaller);
-		word-break: break-all;
-	}
-}
-
-.cmdr-menu-hider-invalid {
-	color: var(--text-error);
-}
-
-.cmdr-menu-hider-hint {
-	display: flex;
-	align-items: flex-start;
-	gap: 6px;
-	margin: 4px 0 10px;
-	font-size: var(--font-ui-smaller);
-	color: var(--text-muted);
-
-	.svg-icon {
-		flex-shrink: 0;
-		margin-top: 2px;
-	}
-}
-
-// Command rows whose mode doesn't apply to this device (declarative settings spike)
+// Command rows whose mode doesn't apply to this device (declarative settings)
 .cmdr-mode-inactive {
 	opacity: 0.5;
 }
 
-// About block mounted inside a declarative settings row (spike)
+// About block mounted inside a declarative settings row
 .setting-item.cmdr-about-row {
 	display: flex;
 	// Obsidian Mobile lays .setting-item out as a column aligned to the start,

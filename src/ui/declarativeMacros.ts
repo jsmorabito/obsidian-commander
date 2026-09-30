@@ -7,8 +7,8 @@ import ConfirmDeleteModal from "./confirmDeleteModal";
 import t from "../l10n";
 
 /**
- * SPIKE: declarative replacement for `MacroViewer.tsx`. Only the list is
- * declarative; the builder stays the existing `MacroBuilderModal`.
+ * The Macros page. Only the list is declarative; editing a macro opens the
+ * existing `MacroBuilderModal`.
  */
 export function macrosPage(
 	plugin: CommanderPlugin,

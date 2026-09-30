@@ -1,5 +1,4 @@
 import {
-	Platform,
 	PluginSettingTab,
 	SettingDefinitionItem,
 	SettingGroupItem,
@@ -8,7 +7,6 @@ import { h, render } from "preact";
 import CommanderPlugin from "../main";
 import CommandManagerBase from "../manager/commands/commandManager";
 import About from "./components/About";
-import settingTabComponent from "./components/settingTabComponent";
 import { updateSpacing } from "../util";
 import t from "../l10n";
 import TextToolbarIntegrationManager from "../manager/commands/textToolbarIntegrationManager";
@@ -33,10 +31,12 @@ import {
 } from "./declarativeHiders";
 
 /**
- * SPIKE: declarative settings (Obsidian 1.13+). Throwaway experiment.
- * Covers the General controls plus one command list (Left Ribbon) to test
- * whether `list` can replace CommandViewer. `display()` is left in place
- * (Path B) but is bypassed on 1.13+ because getSettingDefinitions() is non-empty.
+ * Commander's settings tab, built declaratively (Obsidian 1.13+) from
+ * `getSettingDefinitions()`. Obsidian renders it and indexes it for the global
+ * settings search. Per-area definitions live in the `declarative*.ts` files
+ * next to this one; controls that don't map to a plain settings key are routed
+ * through `getControlValue` / `setControlValue` by a key prefix (`hide|`,
+ * `toolbar|`).
  */
 export default class CommanderSettingTab extends PluginSettingTab {
 	private plugin: CommanderPlugin;
@@ -227,19 +227,5 @@ export default class CommanderSettingTab extends PluginSettingTab {
 			toolbarPage(this.plugin, update),
 			macrosPage(this.plugin, update),
 		];
-	}
-
-	public display(): void {
-		render(
-			h(settingTabComponent, {
-				plugin: this.plugin,
-				mobileMode: Platform.isMobile,
-			}),
-			this.containerEl
-		);
-	}
-
-	public hide(): void {
-		render(null, this.containerEl);
 	}
 }

@@ -16,7 +16,7 @@ import ChooseIconModal from "./chooseIconModal";
 import t from "../l10n";
 
 /**
- * SPIKE: declarative replacement for `AdvancedToolbarSettings.tsx`.
+ * The (mobile) Toolbar page.
  *
  * The sliders, toggle and number inputs are native `control`s whose keys are
  * `toolbar|<field>`; the settings tab routes those to `getToolbarValue` /
