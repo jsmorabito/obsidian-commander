@@ -3,6 +3,11 @@
 
 	&.status-bar-item {
 		margin: 0;
+		// Match core icon items (.plugin-editor-status, .plugin-sync). The default
+		// .status-bar-item has 3px vertical padding and our buttons are also
+		// .clickable-icon (another 4px), which made an icon item taller than the
+		// text items and grew the whole status bar.
+		padding: 0 var(--size-2-2);
 	}
 }
 
