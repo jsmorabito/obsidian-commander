@@ -13,6 +13,7 @@ import { DEFAULT_SETTINGS } from "../constants";
 import { AdvancedToolbarSettings } from "../types";
 import { injectIcons, updateStyles } from "../util";
 import ChooseIconModal from "./chooseIconModal";
+import t from "../l10n";
 
 /**
  * SPIKE: declarative replacement for `AdvancedToolbarSettings.tsx`.
@@ -84,7 +85,6 @@ function resettableSlider(
 				slider = cb;
 				cb.setLimits(min, max, 1)
 					.setValue(current ?? defaultValue)
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						await setToolbarValue(plugin, key(fieldName), value);
 						resetBtn.setDisabled(value === defaultValue);
@@ -93,7 +93,7 @@ function resettableSlider(
 			setting.addExtraButton((bt) => {
 				resetBtn = bt;
 				bt.setIcon("reset")
-					.setTooltip("Restore default")
+					.setTooltip(t("Restore default"))
 					.setDisabled((current ?? defaultValue) === defaultValue)
 					.onClick(async () => {
 						slider.setValue(defaultValue);
@@ -130,7 +130,7 @@ function customIconRows(
 ): SettingGroupItem[] {
 	return plugin.getCommandsWithoutIcons().map((command) => ({
 		name: command.name,
-		desc: `ID: ${command.id}`,
+		desc: t("ID: {{id}}").replace("{{id}}", command.id),
 		render: (setting): void => {
 			setting.addButton((bt) => {
 				const iconDiv = bt.buttonEl.createDiv({
@@ -141,7 +141,7 @@ function customIconRows(
 				)?.iconID;
 				const current = command.icon ?? mapped;
 				if (current) setIcon(iconDiv, current);
-				else bt.setButtonText("No icon");
+				else bt.setButtonText(t("No icon"));
 
 				bt.onClick(async () => {
 					const icon = await new ChooseIconModal(
@@ -165,7 +165,7 @@ function customIconRows(
 			setting.addExtraButton((bt) =>
 				bt
 					.setIcon("reset")
-					.setTooltip("Reset to default - requires a restart")
+					.setTooltip(t("Reset to default - requires a restart"))
 					.onClick(async () => {
 						plugin.settings.advancedToolbar.mappedIcons =
 							plugin.settings.advancedToolbar.mappedIcons.filter(
@@ -176,7 +176,9 @@ function customIconRows(
 						await plugin.saveSettings();
 						update();
 						new Notice(
-							"If the default icon doesn't appear, you might have to restart Obsidian."
+							t(
+								"If the default icon doesn't appear, you might have to restart Obsidian."
+							)
 						);
 					})
 			);
@@ -191,19 +193,21 @@ export function toolbarPage(
 	const items: SettingDefinitionItem[] = [
 		{
 			type: "group",
-			heading: "Info",
+			heading: t("Info"),
 			items: [
 				Platform.isMobile
 					? {
-							name: "Open mobile settings",
-							desc: "The Toolbar is only available in Obsidian Mobile. To configure which Commands show up in the Toolbar, open the Mobile Settings.",
+							name: t("Open mobile settings"),
+							desc: t(
+								"The Toolbar is only available in Obsidian Mobile. To configure which Commands show up in the Toolbar, open the Mobile Settings."
+							),
 							action: (): void => {
 								plugin.app.setting.openTabById("interface");
 							},
 					  }
 					: {
-							name: "Mobile only",
-							desc: "The Toolbar is only available in Obsidian Mobile.",
+							name: t("Mobile only"),
+							desc: t("The Toolbar is only available in Obsidian Mobile."),
 					  },
 			],
 		},
@@ -212,21 +216,27 @@ export function toolbarPage(
 			items: [
 				resettableSlider(
 					plugin,
-					"Toolbar row count",
-					"Set how many rows the mobile toolbar should have. Set this to 0 to remove the toolbar.",
+					t("Toolbar row count"),
+					t(
+						"Set how many rows the mobile toolbar should have. Set this to 0 to remove the toolbar."
+					),
 					"rowCount",
 					0,
 					5
 				),
 				{
-					name: "Column layout",
-					desc: "Use a column based layout instead of the default row. This makes it easier to arrange the commands.",
+					name: t("Column layout"),
+					desc: t(
+						"Use a column based layout instead of the default row. This makes it easier to arrange the commands."
+					),
 					control: { type: "toggle", key: key("columnLayout") },
 				},
 				resettableSlider(
 					plugin,
-					"Bottom offset",
-					"Offset the toolbar from the bottom of the screen. This is useful if the toolbar is partially obscured by other UI elements.",
+					t("Bottom offset"),
+					t(
+						"Offset the toolbar from the bottom of the screen. This is useful if the toolbar is partially obscured by other UI elements."
+					),
 					"heightOffset",
 					0,
 					32
@@ -235,28 +245,34 @@ export function toolbarPage(
 		},
 		{
 			type: "group",
-			heading: "Custom icons",
+			heading: t("Custom icons"),
 			visible: Platform.isMobile,
 			items: customIconRows(plugin, update),
 		},
 		{
 			type: "group",
-			heading: "Advanced settings",
+			heading: t("Advanced settings"),
 			items: [
 				numberInput(
-					"Button height",
-					"Change the height of each button inside the mobile toolbar (in px).",
+					t("Button height"),
+					t(
+						"Change the height of each button inside the mobile toolbar (in px)."
+					),
 					"rowHeight"
 				),
 				numberInput(
-					"Button width",
-					"Change the width of each button inside the mobile toolbar (in px).",
+					t("Button width"),
+					t(
+						"Change the width of each button inside the mobile toolbar (in px)."
+					),
 					"buttonWidth"
 				),
 				resettableSlider(
 					plugin,
-					"Toolbar extra spacing",
-					"Some themes need extra spacing in the toolbar. If your toolbar doesn't wrap properly, try increasing this value.",
+					t("Toolbar extra spacing"),
+					t(
+						"Some themes need extra spacing in the toolbar. If your toolbar doesn't wrap properly, try increasing this value."
+					),
 					"spacing",
 					0,
 					64
@@ -267,8 +283,8 @@ export function toolbarPage(
 
 	return {
 		type: "page",
-		name: Platform.isMobile ? "Mobile Toolbar" : "Toolbar",
-		desc: "Mobile toolbar layout and icons",
+		name: Platform.isMobile ? t("Mobile Toolbar") : t("Toolbar"),
+		desc: t("Mobile toolbar layout and icons"),
 		items,
 	};
 }

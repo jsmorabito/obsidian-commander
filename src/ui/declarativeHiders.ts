@@ -11,6 +11,7 @@ import {
 	MenuScope,
 } from "../manager/menuHiderManager";
 import { updateHiderStylesheet } from "../util";
+import t from "../l10n";
 
 /**
  * SPIKE: declarative replacements for `hidingViewer.tsx`.
@@ -83,8 +84,10 @@ export function ribbonHiderPage(
 ): SettingDefinitionPage {
 	return {
 		type: "page",
-		name: "Hide other Commands",
-		desc: "Turn off to hide ribbon icons added by Obsidian or other plugins.",
+		name: t("Hide other Commands"),
+		desc: t(
+			"Turn off to hide ribbon icons added by Obsidian or other plugins."
+		),
 		items: [
 			{
 				type: "group",
@@ -117,14 +120,16 @@ export function statusbarHiderPage(
 				name: id
 					.replace(/-/g, " ")
 					.replace(/(^\w{1})|(\s+\w{1})/g, (l) => l.toUpperCase()),
-				description: "Core Plugin",
+				description: t("Core Plugin"),
 			} as PluginManifest)
 	);
 
 	return {
 		type: "page",
-		name: "Hide other Commands",
-		desc: "Turn off to hide status bar items added by Obsidian or other plugins.",
+		name: t("Hide other Commands"),
+		desc: t(
+			"Turn off to hide status bar items added by Obsidian or other plugins."
+		),
 		items: [
 			{
 				type: "group",
@@ -163,11 +168,13 @@ export function menuHiderItems(
 	return [
 		{
 			type: "group",
-			heading: "Hide menu items",
+			heading: t("Hide menu items"),
 			items: [
 				{
-					name: "Add entry",
-					desc: "Remove items from this menu by exact name (case-insensitive), or by a regular expression wrapped in slashes, e.g. /^Open in default app$/i.",
+					name: t("Add entry"),
+					desc: t(
+						"Remove items from this menu by their exact name (case-insensitive), or by a regular expression wrapped in slashes, e.g. /^Open in default app$/i."
+					),
 					render: (setting): void => {
 						let draft = "";
 						const add = async (): Promise<void> => {
@@ -177,7 +184,7 @@ export function menuHiderItems(
 							await persist();
 						};
 						setting.addText((text) => {
-							text.setPlaceholder("Menu item name or /regex/").onChange(
+							text.setPlaceholder(t("Menu item name or /regex/")).onChange(
 								(v) => (draft = v)
 							);
 							text.inputEl.addEventListener("keydown", (e) => {
@@ -188,22 +195,27 @@ export function menuHiderItems(
 							});
 						});
 						setting.addButton((btn) =>
-							btn.setButtonText("Add").setCta().onClick(add)
+							btn.setButtonText(t("Add")).setCta().onClick(add)
 						);
 					},
+				},
+				// Sits directly above the toggles it describes, as in the old UI.
+				{
+					name: t(
+						"Open this menu once and its items will appear here to toggle. Regexes and names typed above are always applied."
+					),
 				},
 				...titles.map((title) => showRow(scope, title, title)),
 			],
 		},
 		{
 			type: "list",
-			heading: "Regular expressions",
-			emptyState:
-				"Open this menu once and its items appear above; turn a toggle off to hide it. Regexes you add are always applied.",
+			heading: t("Regular expressions"),
+			emptyState: t("No regular expressions added."),
 			items: patterns.map((entry) => ({
 				name: entry,
 				desc: isInvalidPattern(entry)
-					? "Invalid regular expression — this entry is ignored."
+					? t("Invalid regular expression — this entry is ignored.")
 					: undefined,
 			})),
 			onDelete: (index): void => {
