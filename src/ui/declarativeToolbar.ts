@@ -1,9 +1,7 @@
 import {
-	ExtraButtonComponent,
 	Notice,
 	Platform,
 	setIcon,
-	SliderComponent,
 	SettingDefinitionItem,
 	SettingDefinitionPage,
 	SettingGroupItem,
@@ -13,6 +11,7 @@ import { DEFAULT_SETTINGS } from "../constants";
 import { AdvancedToolbarSettings } from "../types";
 import { injectIcons, updateStyles } from "../util";
 import ChooseIconModal from "./chooseIconModal";
+import { resettableSlider } from "./declarativeSlider";
 import t from "../l10n";
 
 /**
@@ -57,8 +56,7 @@ export async function setToolbarValue(
 
 const key = (name: keyof AdvancedToolbarSettings): string => `${PREFIX}${name}`;
 
-/** A slider with a reset button; the native slider has none, so it's a `render` row. */
-function resettableSlider(
+function toolbarSlider(
 	plugin: CommanderPlugin,
 	name: string,
 	desc: string,
@@ -66,37 +64,15 @@ function resettableSlider(
 	min: number,
 	max: number
 ): SettingGroupItem {
-	return {
+	return resettableSlider({
 		name,
 		desc,
-		render: (setting): void => {
-			const defaultValue = DEFAULT_SETTINGS.advancedToolbar[fieldName];
-			const current = plugin.settings.advancedToolbar[fieldName];
-			let slider: SliderComponent;
-			let resetBtn: ExtraButtonComponent;
-
-			setting.addSlider((cb) => {
-				slider = cb;
-				cb.setLimits(min, max, 1)
-					.setValue(current ?? defaultValue)
-					.onChange(async (value) => {
-						await setToolbarValue(plugin, key(fieldName), value);
-						resetBtn.setDisabled(value === defaultValue);
-					});
-			});
-			setting.addExtraButton((bt) => {
-				resetBtn = bt;
-				bt.setIcon("reset")
-					.setTooltip(t("Restore default"))
-					.setDisabled((current ?? defaultValue) === defaultValue)
-					.onClick(async () => {
-						slider.setValue(defaultValue);
-						await setToolbarValue(plugin, key(fieldName), defaultValue);
-						resetBtn.setDisabled(true);
-					});
-			});
-		},
-	};
+		min,
+		max,
+		value: () => plugin.settings.advancedToolbar[fieldName],
+		defaultValue: DEFAULT_SETTINGS.advancedToolbar[fieldName],
+		onChange: (value) => setToolbarValue(plugin, key(fieldName), value),
+	});
 }
 
 function numberInput(
@@ -208,7 +184,7 @@ export function toolbarPage(
 		{
 			type: "group",
 			items: [
-				resettableSlider(
+				toolbarSlider(
 					plugin,
 					t("Toolbar row count"),
 					t(
@@ -225,7 +201,7 @@ export function toolbarPage(
 					),
 					control: { type: "toggle", key: key("columnLayout") },
 				},
-				resettableSlider(
+				toolbarSlider(
 					plugin,
 					t("Bottom offset"),
 					t(
@@ -261,7 +237,7 @@ export function toolbarPage(
 					),
 					"buttonWidth"
 				),
-				resettableSlider(
+				toolbarSlider(
 					plugin,
 					t("Toolbar extra spacing"),
 					t(

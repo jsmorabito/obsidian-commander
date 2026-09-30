@@ -7,6 +7,7 @@ import { h, render } from "preact";
 import CommanderPlugin from "../main";
 import CommandManagerBase from "../manager/commands/commandManager";
 import About from "./components/About";
+import { DEFAULT_SETTINGS } from "../constants";
 import { updateSpacing } from "../util";
 import t from "../l10n";
 import TextToolbarIntegrationManager from "../manager/commands/textToolbarIntegrationManager";
@@ -15,6 +16,7 @@ import {
 	commandListDefinition,
 } from "./declarativeCommandList";
 import { macrosPage } from "./declarativeMacros";
+import { resettableSlider } from "./declarativeSlider";
 import {
 	getToolbarValue,
 	isToolbarKey,
@@ -83,19 +85,17 @@ export default class CommanderSettingTab extends PluginSettingTab {
 						desc: t('Show the "Add Command" Button in every Menu.'),
 						control: { type: "toggle", key: "showAddCommand" },
 					},
-					{
+					resettableSlider({
 						name: t("Choose custom spacing for Command Buttons"),
 						desc: t(
 							"Change the spacing between commands. You can set different values on mobile and desktop."
 						),
-						control: {
-							type: "slider",
-							key: "spacing",
-							min: 0,
-							max: 32,
-							step: 1,
-						},
-					},
+						min: 0,
+						max: 32,
+						value: () => this.plugin.settings.spacing,
+						defaultValue: DEFAULT_SETTINGS.spacing,
+						onChange: (value) => this.setControlValue("spacing", value),
+					}),
 				],
 			},
 			...this.commandPages(),
