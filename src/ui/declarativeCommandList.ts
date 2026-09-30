@@ -13,9 +13,9 @@ import MobileModifyModal from "./mobileModifyModal";
 import t from "../l10n";
 
 /**
- * SPIKE: shared declarative replacement for `CommandViewer`. Given any
- * `CommandManagerBase`, builds a `list` definition with add, delete, drag
- * reorder and per-row rename / icon / color / mode controls.
+ * Shared declarative command list. Given any `CommandManagerBase`, builds a
+ * `list` definition with add, delete, drag reorder and per-row rename / icon /
+ * color / mode controls (a single edit button on mobile).
  */
 
 const MODE_ICONS: Record<string, string> = {

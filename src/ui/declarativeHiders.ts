@@ -14,7 +14,7 @@ import { updateHiderStylesheet } from "../util";
 import t from "../l10n";
 
 /**
- * SPIKE: declarative replacements for `hidingViewer.tsx`.
+ * Hiders for native ribbon icons, status bar items and right-click menu items.
  *
  * Each row is a native `toggle` control where ON means the item is *shown*
  * (matching Obsidian's own toggles); the stored `hide.*` lists still hold the
