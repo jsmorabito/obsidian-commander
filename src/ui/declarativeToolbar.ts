@@ -16,11 +16,9 @@ import ChooseIconModal from "./chooseIconModal";
 import t from "../l10n";
 
 /**
- * The (mobile) Toolbar page.
- *
- * The sliders, toggle and number inputs are native `control`s whose keys are
- * `toolbar|<field>`; the settings tab routes those to `getToolbarValue` /
- * `setToolbarValue`. Only the mobile "Custom icons" rows need `render`.
+ * The (mobile) Toolbar page. Native controls use `toolbar|<field>` keys routed
+ * by the settings tab to `getToolbarValue` / `setToolbarValue`; only the
+ * "Custom icons" rows and resettable sliders need `render`.
  */
 
 const PREFIX = "toolbar|";
@@ -59,11 +57,7 @@ export async function setToolbarValue(
 
 const key = (name: keyof AdvancedToolbarSettings): string => `${PREFIX}${name}`;
 
-/**
- * A slider with a restore-default button. The declarative slider control has
- * no reset affordance, so this is a `render` row: `addSlider` plus an extra
- * button, mirroring the old `addResettableSlider`.
- */
+/** A slider with a reset button; the native slider has none, so it's a `render` row. */
 function resettableSlider(
 	plugin: CommanderPlugin,
 	name: string,
