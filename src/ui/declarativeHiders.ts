@@ -15,12 +15,8 @@ import t from "../l10n";
 
 /**
  * Hiders for native ribbon icons, status bar items and right-click menu items.
- *
- * Each row is a native `toggle` control where ON means the item is *shown*
- * (matching Obsidian's own toggles); the stored `hide.*` lists still hold the
- * hidden entries. The toggle's key encodes the list and entry it edits
- * (`hide|<list>|<entry>`), and the settings tab routes those keys to
- * `isShown` / `setShown`, inverting the value.
+ * Rows are native toggles where ON = shown; keys are `hide|<list>|<entry>`,
+ * routed by the settings tab to `isShown` / `setShown`.
  */
 
 export type HideList = "leftRibbon" | "statusbar" | MenuScope;
@@ -199,7 +195,7 @@ export function menuHiderItems(
 						);
 					},
 				},
-				// Sits directly above the toggles it describes, as in the old UI.
+				// Hint for the toggles below.
 				{
 					name: t(
 						"Open this menu once and its items will appear here to toggle. Regexes and names typed above are always applied."

@@ -31,12 +31,10 @@ import {
 } from "./declarativeHiders";
 
 /**
- * Commander's settings tab, built declaratively (Obsidian 1.13+) from
- * `getSettingDefinitions()`. Obsidian renders it and indexes it for the global
- * settings search. Per-area definitions live in the `declarative*.ts` files
- * next to this one; controls that don't map to a plain settings key are routed
- * through `getControlValue` / `setControlValue` by a key prefix (`hide|`,
- * `toolbar|`).
+ * Commander's settings tab, built from `getSettingDefinitions()` (Obsidian
+ * 1.13+). Per-area definitions live in the `declarative*.ts` files; controls
+ * that aren't plain settings keys are routed by a key prefix (`hide|`,
+ * `toolbar|`) in `getControlValue` / `setControlValue`.
  */
 export default class CommanderSettingTab extends PluginSettingTab {
 	private plugin: CommanderPlugin;
@@ -108,11 +106,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 		];
 	}
 
-	/**
-	 * The About block (logo, credits, feedback/donate links, version). Has no
-	 * declarative equivalent, so it's a `render` row that mounts the existing
-	 * Preact component and unmounts it on teardown.
-	 */
+	/** No declarative equivalent, so About is a `render` row mounting Preact. */
 	private aboutRow(): SettingGroupItem {
 		return {
 			name: t("About"),
@@ -126,7 +120,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 		};
 	}
 
-	/** One page per command location; each is a shared list definition. */
+	/** One page per command location, each built from the shared command list. */
 	private commandPages(): SettingDefinitionItem[] {
 		const {
 			leftRibbon,

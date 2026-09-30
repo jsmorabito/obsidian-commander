@@ -4,9 +4,8 @@
 	&.status-bar-item {
 		margin: 0;
 		// Match core icon items (.plugin-editor-status, .plugin-sync). The default
-		// .status-bar-item has 3px vertical padding and our buttons are also
-		// .clickable-icon (another 4px), which made an icon item taller than the
-		// text items and grew the whole status bar.
+		// 3px vertical padding plus .clickable-icon's made icon items taller and
+		// grew the status bar.
 		padding: 0 var(--size-2-2);
 	}
 }
@@ -333,8 +332,8 @@
 // About block mounted inside a declarative settings row
 .setting-item.cmdr-about-row {
 	display: flex;
-	// Obsidian Mobile lays .setting-item out as a column aligned to the start,
-	// so set the direction and alignment explicitly rather than rely on defaults.
+	// Obsidian Mobile lays .setting-item out as a start-aligned column, so set
+	// direction and alignment explicitly.
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
@@ -342,9 +341,8 @@
 	border: none;
 	padding: var(--size-4-8) 0;
 
-	// The standalone About has bottom padding for the old tab layout; drop it
-	// so the content sits in the middle of the block. Full width lets its own
-	// centered column span the row instead of shrinking to the start edge.
+	// Drop the old tab layout's bottom padding and span the full row so the
+	// content centers.
 	.cmdr-about {
 		width: 100%;
 		padding-bottom: 0;

@@ -13,9 +13,8 @@ import MobileModifyModal from "./mobileModifyModal";
 import t from "../l10n";
 
 /**
- * Shared declarative command list. Given any `CommandManagerBase`, builds a
- * `list` definition with add, delete, drag reorder and per-row rename / icon /
- * color / mode controls (a single edit button on mobile).
+ * Declarative command list for any `CommandManagerBase`: add, delete, drag
+ * reorder and per-row edit controls (a single edit button on mobile).
  */
 
 const MODE_ICONS: Record<string, string> = {
@@ -63,10 +62,9 @@ export function commandListDefinition(
 			owner?.name ?? "Obsidian"
 		);
 
-		// Shared by the inline desktop controls and the mobile edit modal.
-		// The inline input doesn't need a re-render (the desktop row title is the
-		// command's own name), and re-rendering on blur would swallow the click
-		// that caused the blur; the mobile modal changes the row title, so it does.
+		// Shared by the inline controls and the mobile modal. The desktop input
+		// passes rerender=false: re-rendering on blur would swallow the click
+		// that caused it.
 		const rename = (name: string, rerender = true): void => {
 			pair.name = name.trim() || cmd?.name || pair.name;
 			void apply(rerender);
@@ -92,9 +90,8 @@ export function commandListDefinition(
 		};
 
 		return {
-			// Desktop: the row title is the underlying command and the editable
-			// name is the input. Mobile has no inline input, so the title is the
-			// custom name and the command name moves into the description.
+			// Mobile has no inline name input, so it shows the custom name as the
+			// title and moves the command name into the description.
 			name: Platform.isMobile ? pair.name : cmd?.name ?? pair.name,
 			desc: cmd
 				? Platform.isMobile && pair.name !== cmd.name
@@ -106,15 +103,13 @@ export function commandListDefinition(
 					setting.setClass("mod-warning");
 					return;
 				}
-				// Rows that don't apply to this device stay visible but dimmed,
-				// so the list index always matches the underlying array.
+				// Dim (don't hide) rows for other devices so list indices match pairs.
 				setting.settingEl.toggleClass(
 					"cmdr-mode-inactive",
 					showMode && !isModeActive(pair.mode, plugin)
 				);
 
-				// Mobile: one compact edit button opens the existing modal
-				// (rename, icon, mode, color) instead of four cramped controls.
+				// Mobile: a single edit button opens the existing modal.
 				if (Platform.isMobile) {
 					setting.addExtraButton((btn) =>
 						btn
