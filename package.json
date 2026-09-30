@@ -1,6 +1,6 @@
 {
 	"name": "cmdr",
-	"version": "0.5.12",
+	"version": "0.5.13",
 	"description": "Customize your workspace by adding commands /everywhere/.",
 	"main": "main.js",
 	"scripts": {
