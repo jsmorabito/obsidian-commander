@@ -57,25 +57,21 @@ npm run build:esbuild
         textToolbarManager.ts        # Text selection toolbar (new)
         index.ts
       ui/
-        settingTab.ts                # Registers settings tab with Obsidian
-        settingTabModal.ts
+        settingTab.ts                # Declarative settings tab (getSettingDefinitions)
+        declarativeCommandList.ts    # Shared command list (add/delete/reorder/edit rows)
+        declarativeHiders.ts         # Hide native ribbon/status bar/menu items
+        declarativeToolbar.ts        # Mobile toolbar page
+        declarativeMacros.ts         # Macros page
         icons.ts
         addCommandModal.ts
         chooseIconModal.ts
         chooseCustomNameModal.ts
         confirmDeleteModal.ts
-        components/                  # Preact components
-          settingTabComponent.tsx    # Tab container, tab list
-          commandViewerComponent.tsx # Reusable command list with add/remove/reorder
-          commandComponent.tsx       # Single command row
-          hidingViewer.tsx           # Eye-toggle accordions for hiding native items
-          settingComponent.tsx       # ToggleComponent, SliderComponent, EyeToggleComponent
-          TextToolbarSettings.tsx    # Text toolbar tab content (new)
-          AdvancedToolbarSettings.tsx
-          MacroViewer.tsx
-          MacroBuilder.tsx
-          Accordion.tsx
-          About.tsx
+        mobileModifyModal.ts         # Mobile row editor (rename/icon/mode/color)
+        components/                  # Preact, used only inside modals and the About row
+          About.tsx                  # About block, mounted in a render row
+          MacroBuilder.tsx           # Macro builder (inside MacroBuilderModal)
+          settingComponent.tsx       # SliderComponent (used by MacroBuilder)
       styles/
         styles.scss
         advanced-toolbar.scss
@@ -99,18 +95,21 @@ this.settings.hide.textToolbar ??= [];
 ```
 
 ### Localization
-All user-visible strings should go through `t()` from `src/l10n.ts`. The canonical locale is `locale/en.json`. If you add a new UI string, add it to `en.json` (and ideally other locale files). Strings not in the locale fall back to `en.json`; if not found there either, `t()` returns `undefined`, which renders as blank text.
+All user-visible strings should go through `t()` from `src/l10n.ts`. The canonical locale is `locale/en.json`. If you add a new UI string, add it to `en.json` **and to every non-empty locale file** (use the English text as a placeholder until it is translated): `src/__tests__/locales.test.ts` fails if a filled locale is missing a key. Empty stub locales fall back to `en.json`. If a key is not in `en.json`, `t()` returns `undefined`, which renders as blank text; `src/__tests__/l10nKeys.test.ts` fails when a `t("literal")` in `src/` is not an `en.json` key. Note that `fa.json` uses CRLF line endings; preserve them when editing.
 
-### Preact UI
-The settings UI uses Preact (not React). Components live in `src/ui/components/`. Reuse existing components:
-- `ToggleComponent` / `SliderComponent` / `EyeToggleComponent` from `settingComponent.tsx`
-- `CommandViewer` from `commandViewerComponent.tsx` — takes a `CommandManagerBase`, renders the command list with add/remove/reorder
-- `Accordion` from `Accordion.tsx`
+### Settings UI (declarative)
+The settings tab (`src/ui/settingTab.ts`) is declarative (Obsidian 1.13+): `getSettingDefinitions()` returns groups, pages and lists, and Obsidian renders them and indexes them for the global settings search. There is no `display()`. Prefer native `control` definitions (toggle, slider, number, dropdown, text); use a `render` callback only when a native control can't express it (e.g. a slider with a reset button, rows with several buttons).
 
-To add a new settings tab:
-1. Create a Preact component in `src/ui/components/`
-2. Add an entry to the `tabs` array in `settingTabComponent.tsx`
-3. The tab name must be a plain string (not `undefined`) — if using `t()`, ensure the key exists in `en.json`
+- Controls read and write through `getControlValue` / `setControlValue` on the tab. Plain keys map to `plugin.settings`; keys with a prefix are routed to a helper (`hide|<list>|<entry>` in `declarativeHiders.ts`, `toolbar|<field>` in `declarativeToolbar.ts`).
+- Command locations (ribbon, status bar, page header, menus, explorer, text toolbar) all use `commandListDefinition(plugin, manager, heading, update, options)` from `declarativeCommandList.ts`; it works with any `CommandManagerBase`.
+- Definitions are rebuilt on every render, so keep `getSettingDefinitions()` free of I/O. Call `this.update()` after changing the shape of a list.
+- Preact is still used inside modals (`MacroBuilderModal`, `MobileModifyModal`, `confirmDeleteModal`) and the About row. It is not used for the settings tab itself.
+
+To add a new settings page:
+1. Create `src/ui/declarative<Feature>.ts` exporting a function that returns a `SettingDefinitionPage` (or list/group items)
+2. Add it to `getSettingDefinitions()` / `commandPages()` in `settingTab.ts`
+3. Wrap every user-visible string in `t()` and add the keys (see Localization)
+4. If a control needs a non-settings key, add a prefix route in `getControlValue` / `setControlValue`
 
 ## Adding a new feature (checklist)
 
@@ -118,8 +117,8 @@ To add a new settings tab:
 2. **Defaults**: Add corresponding defaults in `DEFAULT_SETTINGS` in `src/constants.ts`
 3. **Manager**: Create `src/manager/commands/<feature>Manager.ts` extending `CommandManagerBase`; export from `index.ts`
 4. **main.ts**: Add nullish guard for any new array fields; instantiate manager; add to `plugin.manager`
-5. **Settings UI**: Create component in `src/ui/components/`; add tab to `settingTabComponent.tsx`
-6. **Locale**: Add any new UI strings to `locale/en.json`
+5. **Settings UI**: Add a declarative page/definitions (see Settings UI); wire it into `settingTab.ts`
+6. **Locale**: Add any new UI strings to `locale/en.json` and every non-empty locale (see Localization)
 7. **Styles**: Add CSS classes to `src/styles/styles.scss` using `cmdr-` prefix
 
 ## Text Toolbar feature
@@ -139,7 +138,9 @@ The Text Toolbar (`src/manager/commands/textToolbarManager.ts`) shows a floating
 
 - `id`, `name`, `version` (SemVer), `minAppVersion`, `description`, `isDesktopOnly` are required
 - Never change `id` after release
-- Keep `minAppVersion` accurate when using newer APIs
+- Keep `minAppVersion` accurate when using newer APIs. It is `1.13.0` because the settings tab is declarative (`getSettingDefinitions()` has no `display()` fallback); `eslint-plugin-obsidianmd` warns if it drops below that.
+- `versions.json` is updated by the `npm version` script at release time, not by hand; older Obsidian versions keep getting the last compatible release.
+- The `obsidian` dev dependency must be >= 1.13.1 so the declarative settings types are available.
 
 ## Testing
 
