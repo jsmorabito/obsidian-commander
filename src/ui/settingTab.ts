@@ -1,4 +1,5 @@
 import {
+	Platform,
 	PluginSettingTab,
 	SettingDefinitionItem,
 	SettingGroupItem,
@@ -124,6 +125,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	private commandPages(): SettingDefinitionItem[] {
 		const {
 			leftRibbon,
+			rightRibbon,
 			statusBar,
 			editorMenu,
 			fileMenu,
@@ -149,6 +151,17 @@ export default class CommanderSettingTab extends PluginSettingTab {
 					ribbonHiderPage(this.plugin),
 				],
 			},
+			// Obsidian only mounts the right ribbon on desktop.
+			...(Platform.isMobile
+				? []
+				: [
+						{
+							type: "page",
+							name: t("Right Ribbon"),
+							desc: t("Commands shown in the right ribbon"),
+							items: [list(rightRibbon, t("Ribbon commands"))],
+						} satisfies SettingDefinitionItem,
+				  ]),
 			{
 				type: "page",
 				name: t("Statusbar"),
