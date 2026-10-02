@@ -348,3 +348,46 @@
 		padding-bottom: 0;
 	}
 }
+
+// Reveal Obsidian's own (otherwise hidden) right ribbon once it holds
+// Commander buttons. Mirrors core's left-ribbon rules; `body.show-ribbon`
+// keeps the core "Show ribbon" toggle in charge, and the extra specificity
+// overrides core's `.is-hidden` (set when the right sidebar has no tabs).
+body.show-ribbon .workspace-ribbon.mod-secondary.cmdr-right-ribbon {
+	display: flex;
+	margin-top: var(--header-height);
+	border-inline-end: none;
+	border-inline-start: var(--divider-width) solid var(--divider-color);
+
+	// Core only gives the left ribbon its collapsed colour
+	// (`.workspace-ribbon.mod-primary.is-collapsed`); mirror it so both
+	// ribbons change colour together when their sidebar opens or closes.
+	&.is-collapsed {
+		transition: background-color 250ms 95ms ease-in-out;
+		background-color: var(--ribbon-background-collapsed);
+	}
+}
+
+// On macOS core pins the right sidebar toggle to the window's top-right
+// corner and reserves 38px at the end of the top-right tab bar for it. With
+// the ribbon showing, the toggle belongs in the ribbon's corner instead: size
+// it to the ribbon like core does for the left one
+// (`.workspace-ribbon .sidebar-toggle-button`) and give the tab bar its
+// normal padding back.
+.show-ribbon.mod-macos.is-hidden-frameless:not(.is-popout-window, .is-mobile):not(.mod-rtl)
+	.workspace:has(> .workspace-ribbon.cmdr-right-ribbon) {
+	// Also draw the corner's bottom outline, as core's
+	// `.workspace-ribbon.mod-primary:before` does on the left.
+	.sidebar-toggle-button.mod-secondary {
+		width: var(--ribbon-width);
+		height: var(--header-height);
+		box-sizing: border-box;
+		padding-inline-end: 0;
+		justify-content: center;
+		border-bottom: var(--tab-outline-width) solid var(--tab-outline-color);
+	}
+
+	.workspace-tabs.mod-top-right-space .workspace-tab-header-container {
+		padding-right: var(--size-4-2);
+	}
+}

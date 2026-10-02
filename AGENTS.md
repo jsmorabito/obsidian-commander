@@ -50,6 +50,7 @@ npm run build:esbuild
       manager/commands/              # Feature managers (one per UI location)
         commandManager.ts            # Abstract base class
         leftRibbonManager.ts
+        rightRibbonManager.ts        # Revives core's hidden right ribbon (desktop)
         statusBarManager.ts
         pageHeaderManager.ts
         menuManager.ts

@@ -125,17 +125,21 @@ declare module "obsidian" {
 			callback: () => void;
 		}[];
 		items: {
+			id?: string;
 			icon: string;
 			title: string;
 			buttonEl: HTMLElement;
 		}[];
+		containerEl: HTMLElement;
 		collapseButtonEl: HTMLElement;
-		ribbonItemsEl: HTMLElement;
+		/** Null on the right ribbon: Obsidian only builds it for the left one. */
+		ribbonItemsEl: HTMLElement | null;
 		addRibbonItemButton: (
+			id: string,
 			icon: string,
-			name: string,
+			title: string,
 			callback: (event: MouseEvent) => void
-		) => void;
+		) => HTMLElement;
 		makeRibbonItemButton: (
 			icon: string,
 			name: string,
