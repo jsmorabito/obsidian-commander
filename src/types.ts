@@ -140,6 +140,8 @@ declare module "obsidian" {
 			title: string,
 			callback: (event: MouseEvent) => void
 		) => HTMLElement;
+		/** Re-renders the items; `persist` is true for user changes (drag, hide). */
+		onChange: (persist: boolean) => void;
 		makeRibbonItemButton: (
 			icon: string,
 			name: string,

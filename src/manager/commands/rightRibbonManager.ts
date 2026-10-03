@@ -27,6 +27,21 @@ export default class RightRibbonManager extends CommandManagerBase {
 			void this.addCommand(pair, false);
 		});
 
+		// Core's drag-to-reorder updates `items` and then calls
+		// `onChange(true)`, which saves the layout, but core only saves the left
+		// ribbon's order. Hook this one instance so a drag also updates our
+		// settings; deleting the own property on unload restores the prototype
+		// method.
+		const ribbon = this.ribbon;
+		const onChange = ribbon.onChange;
+		ribbon.onChange = (persist: boolean): void => {
+			onChange.call(ribbon, persist);
+			if (persist) void this.syncOrderFromRibbon();
+		};
+		this.plugin.register(() => {
+			Reflect.deleteProperty(ribbon, "onChange");
+		});
+
 		this.plugin.register(() => {
 			this.plugin.settings.rightRibbon.forEach((pair) => {
 				void this.removeCommand(pair, false);
@@ -61,6 +76,31 @@ export default class RightRibbonManager extends CommandManagerBase {
 	): WorkspaceRibbon["items"][number] | undefined {
 		const id = this.itemId(pair);
 		return this.ribbon?.items.find((i) => i.id === id);
+	}
+
+	/**
+	 * Copy the ribbon's button order back into settings after a drag. Entries
+	 * with no button (another device's mode) keep their slots; the shown ones
+	 * fill their slots in the ribbon's new order.
+	 */
+	private async syncOrderFromRibbon(): Promise<void> {
+		const ribbon = this.ribbon;
+		if (!ribbon) return;
+		const shown = (pair: CommandIconPair): boolean =>
+			!!this.findItem(pair)?.buttonEl;
+		const ordered = ribbon.items
+			.map((item) => this.pairs.find((p) => this.itemId(p) === item.id))
+			.filter((p): p is CommandIconPair => !!p);
+		// Identical entries share one button, so slots and buttons can't be
+		// matched up; leave the order alone.
+		if (ordered.length !== this.pairs.filter(shown).length) return;
+
+		let next = 0;
+		const reordered = this.pairs.map((p) => (shown(p) ? ordered[next++] : p));
+		if (reordered.every((p, i) => p === this.pairs[i])) return;
+		// Reorder in place: `pairs` is the settings array itself.
+		this.pairs.splice(0, this.pairs.length, ...reordered);
+		await this.plugin.saveSettings();
 	}
 
 	/** Lazily give the native right ribbon the container it lacks. */
