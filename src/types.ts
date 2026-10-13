@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { Command, PluginManifest } from "obsidian";
 
 export enum Action {
@@ -68,11 +67,6 @@ export interface AdvancedToolbarSettings {
 	heightOffset: number;
 }
 
-export interface Tab {
-	name: string;
-	tab: h.JSX.Element;
-}
-
 export type Mode = "desktop" | "any" | "mobile" | (string & {});
 
 export interface CommandIconPair {
@@ -115,6 +109,7 @@ declare module "obsidian" {
 		appId: string;
 		isMobile: boolean;
 		setting: {
+			open: () => void;
 			closeActiveTab: () => void;
 			openTabById: (id: string) => void;
 			activeTab: {
@@ -130,17 +125,23 @@ declare module "obsidian" {
 			callback: () => void;
 		}[];
 		items: {
+			id?: string;
 			icon: string;
 			title: string;
 			buttonEl: HTMLElement;
 		}[];
+		containerEl: HTMLElement;
 		collapseButtonEl: HTMLElement;
-		ribbonItemsEl: HTMLElement;
+		/** Null on the right ribbon: Obsidian only builds it for the left one. */
+		ribbonItemsEl: HTMLElement | null;
 		addRibbonItemButton: (
+			id: string,
 			icon: string,
-			name: string,
+			title: string,
 			callback: (event: MouseEvent) => void
-		) => void;
+		) => HTMLElement;
+		/** Re-renders the items; `persist` is true for user changes (drag, hide). */
+		onChange: (persist: boolean) => void;
 		makeRibbonItemButton: (
 			icon: string,
 			name: string,

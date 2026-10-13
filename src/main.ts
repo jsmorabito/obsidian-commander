@@ -18,13 +18,13 @@ import {
 } from "./manager/commands";
 import { Action, CommanderSettings } from "./types";
 import CommanderSettingTab from "./ui/settingTab";
-import SettingTabModal from "./ui/settingTabModal";
 
 import "./styles/styles.scss";
 import "./styles/advanced-toolbar.scss";
 import { updateHiderStylesheet } from "./util";
 import registerCustomIcons from "./ui/icons";
 import LeftRibbonManager from "./manager/commands/leftRibbonManager";
+import RightRibbonManager from "./manager/commands/rightRibbonManager";
 import MenuHiderManager from "./manager/menuHiderManager";
 
 export default class CommanderPlugin extends Plugin {
@@ -33,7 +33,7 @@ export default class CommanderPlugin extends Plugin {
 		editorMenu: EditorMenuCommandManager;
 		fileMenu: FileMenuCommandManager;
 		leftRibbon: LeftRibbonManager;
-		//rightRibbon: RibbonManager,
+		rightRibbon: RightRibbonManager;
 		//titleBar: TitleBarManager,
 		statusBar: StatusBarManager;
 		pageHeader: PageHeaderManager;
@@ -83,6 +83,7 @@ export default class CommanderPlugin extends Plugin {
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
+		this.settings.rightRibbon ??= [];
 		this.settings.hide.leftRibbon ??= []; // TODO: remove this in a future version
 		this.settings.hide.editorMenuItems ??= []; // TODO: remove this in a future version
 		this.settings.hide.fileMenuItems ??= []; // TODO: remove this in a future version
@@ -120,7 +121,7 @@ export default class CommanderPlugin extends Plugin {
 			),
 			fileMenu: new FileMenuCommandManager(this, this.settings.fileMenu),
 			leftRibbon: new LeftRibbonManager(this),
-			//rightRibbon: new RibbonManager("right", this),
+			rightRibbon: new RightRibbonManager(this),
 			//titleBar: new TitleBarManager(this, this.settings.titleBar),
 			statusBar: new StatusBarManager(this, this.settings.statusBar),
 			pageHeader: new PageHeaderManager(this, this.settings.pageHeader),
@@ -134,7 +135,10 @@ export default class CommanderPlugin extends Plugin {
 		this.addCommand({
 			name: t("Open Commander Settings"),
 			id: "open-commander-settings",
-			callback: () => new SettingTabModal(this).open(),
+			callback: () => {
+				this.app.setting.open();
+				this.app.setting.openTabById(this.manifest.id);
+			},
 		});
 
 		const applyEditorMenu =
