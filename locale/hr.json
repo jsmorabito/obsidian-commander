@@ -140,5 +140,8 @@
   "File menu commands": "File menu commands",
   "Text Toolbar": "Text Toolbar",
   "Commands in the Text Formatting Toolbar plugin": "Commands in the Text Formatting Toolbar plugin",
-  "Text toolbar commands": "Text toolbar commands"
+  "Text toolbar commands": "Text toolbar commands",
+	"New Tab": "New Tab",
+	"Commands shown on the empty new tab page": "Commands shown on the empty new tab page",
+	"New tab commands": "New tab commands"
 }

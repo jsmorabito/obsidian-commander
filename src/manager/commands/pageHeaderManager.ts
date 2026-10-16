@@ -1,11 +1,9 @@
-import { ItemView, Menu, WorkspaceLeaf } from "obsidian";
+import { ItemView, WorkspaceLeaf } from "obsidian";
 import t from "src/l10n";
 import CommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import ChooseCustomNameModal from "src/ui/chooseCustomNameModal";
-import ChooseIconModal from "src/ui/chooseIconModal";
-import ConfirmDeleteModal from "src/ui/confirmDeleteModal";
 import { chooseNewCommand, isModeActive } from "src/util";
+import { showCommandContextMenu } from "src/ui/commandContextMenu";
 import CommandManagerBase from "./commandManager";
 
 export default class PageHeaderManager extends CommandManagerBase {
@@ -39,61 +37,7 @@ export default class PageHeaderManager extends CommandManagerBase {
 				: pair.color;
 		buttonIcon.addEventListener("contextmenu", (event) => {
 			event.stopImmediatePropagation();
-			new Menu()
-				.addItem((item) => {
-					item.setTitle(t("Add command"))
-						.setIcon("command")
-						.onClick(async () => {
-							const pair = await chooseNewCommand(this.plugin);
-							await this.addCommand(pair);
-						});
-				})
-				.addSeparator()
-				.addItem((item) => {
-					item.setTitle(t("Change Icon"))
-						.setIcon("box")
-						.onClick(async () => {
-							const newIcon = await new ChooseIconModal(
-								this.plugin
-							).awaitSelection();
-							if (newIcon && newIcon !== pair.icon) {
-								pair.icon = newIcon;
-								await this.plugin.saveSettings();
-								await this.reorder();
-							}
-						});
-				})
-				.addItem((item) => {
-					item.setTitle(t("Rename"))
-						.setIcon("text-cursor-input")
-						.onClick(async () => {
-							const newName = await new ChooseCustomNameModal(
-								pair.name,
-								this.plugin
-							).awaitSelection();
-							if (newName && newName !== pair.name) {
-								pair.name = newName;
-								await this.plugin.saveSettings();
-								await this.reorder();
-							}
-						});
-				})
-				.addItem((item) => {
-					item.dom.addClass("is-warning");
-					item.setTitle(t("Delete"))
-						.setIcon("lucide-trash")
-						.onClick(async () => {
-							if (
-								!this.plugin.settings.confirmDeletion ||
-								(await new ConfirmDeleteModal(
-									this.plugin
-								).didChooseRemove())
-							) {
-								await this.removeCommand(pair);
-							}
-						});
-				})
-				.showAtMouseEvent(event);
+			showCommandContextMenu(this.plugin, this, pair, event);
 		});
 	}
 
