@@ -64,7 +64,10 @@ export default class CommanderSettingTab extends PluginSettingTab {
 		}
 		(this.plugin.settings as unknown as Record<string, unknown>)[key] = value;
 		if (key === "spacing") updateSpacing(value as number);
-		if (key === "showAddCommand") await this.plugin.manager.pageHeader.reorder();
+		if (key === "showAddCommand") {
+			await this.plugin.manager.pageHeader.reorder();
+			this.plugin.manager.emptyState.reorder();
+		}
 		await this.plugin.saveSettings();
 	}
 
@@ -131,6 +134,7 @@ export default class CommanderSettingTab extends PluginSettingTab {
 			fileMenu,
 			pageHeader,
 			explorerManager,
+			emptyState,
 			textToolbarIntegration,
 		} = this.plugin.manager;
 		const update = (): void => this.update();
@@ -178,6 +182,12 @@ export default class CommanderSettingTab extends PluginSettingTab {
 				items: [
 					list(pageHeader, t("Page header commands")),
 				],
+			},
+			{
+				type: "page",
+				name: t("New Tab"),
+				desc: t("Commands shown on the empty new tab page"),
+				items: [list(emptyState, t("New tab commands"))],
 			},
 			{
 				type: "page",

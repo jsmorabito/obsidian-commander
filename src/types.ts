@@ -32,6 +32,7 @@ export interface CommanderSettings {
 	statusBar: CommandIconPair[];
 	pageHeader: CommandIconPair[];
 	explorer: CommandIconPair[];
+	emptyState: CommandIconPair[];
 	macros: Macro[];
 	textToolbarCommands: CommandIconPair[];
 	hide: {
@@ -95,7 +96,8 @@ declare module "obsidian" {
 			commands: {
 				[id: string]: Command;
 			};
-			executeCommandById: (id: string) => void;
+			/** `event` lets a command read modifiers (e.g. mod-click for a new tab). */
+			executeCommandById: (id: string, event?: Event) => void;
 			removeCommand: (id: string) => void;
 		};
 		plugins: {
@@ -105,6 +107,9 @@ declare module "obsidian" {
 		};
 		statusBar: {
 			containerEl: HTMLElement;
+		};
+		hotkeyManager?: {
+			printHotkeyForCommand(id: string): string;
 		};
 		appId: string;
 		isMobile: boolean;
@@ -151,6 +156,11 @@ declare module "obsidian" {
 
 	interface WorkspaceLeaf {
 		containerEl: HTMLElement;
+	}
+
+	interface View {
+		/** Internal: mounts the view into `containerEl`, then awaits `onOpen()`. */
+		open(containerEl: HTMLElement): Promise<void>;
 	}
 
 	interface Vault {

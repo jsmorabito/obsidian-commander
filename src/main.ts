@@ -10,6 +10,7 @@ import { DEFAULT_SETTINGS } from "./constants";
 import t from "./l10n";
 import {
 	EditorMenuCommandManager,
+	EmptyStateManager,
 	ExplorerManager,
 	FileMenuCommandManager,
 	PageHeaderManager,
@@ -38,6 +39,7 @@ export default class CommanderPlugin extends Plugin {
 		statusBar: StatusBarManager;
 		pageHeader: PageHeaderManager;
 		explorerManager: ExplorerManager;
+		emptyState: EmptyStateManager;
 		textToolbarIntegration: TextToolbarIntegrationManager;
 		menuHider: MenuHiderManager;
 	};
@@ -84,6 +86,7 @@ export default class CommanderPlugin extends Plugin {
 	public async onload(): Promise<void> {
 		await this.loadSettings();
 		this.settings.rightRibbon ??= [];
+		this.settings.emptyState ??= [];
 		this.settings.hide.leftRibbon ??= []; // TODO: remove this in a future version
 		this.settings.hide.editorMenuItems ??= []; // TODO: remove this in a future version
 		this.settings.hide.fileMenuItems ??= []; // TODO: remove this in a future version
@@ -126,6 +129,7 @@ export default class CommanderPlugin extends Plugin {
 			statusBar: new StatusBarManager(this, this.settings.statusBar),
 			pageHeader: new PageHeaderManager(this, this.settings.pageHeader),
 			explorerManager: new ExplorerManager(this, this.settings.explorer),
+			emptyState: new EmptyStateManager(this, this.settings.emptyState),
 			textToolbarIntegration: new TextToolbarIntegrationManager(this, this.settings.textToolbarCommands),
 			menuHider: new MenuHiderManager(this),
 		};
