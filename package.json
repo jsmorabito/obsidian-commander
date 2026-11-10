@@ -33,7 +33,7 @@
 		"@types/canvas-confetti": "^1.6.0",
 		"@types/node": "^20.19.0",
 		"@types/react": "^18.0.25",
-		"@vitest/coverage-v8": "^4.1.11",
+		"@vitest/coverage-v8": "^4.1.12",
 		"builtin-modules": "^3.3.0",
 		"codemirror": "^6.0.1",
 		"codemirror6-themes": "^0.1.2",
@@ -53,7 +53,7 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"typescript-eslint": "^8.59.1",
-		"vitest": "^4.1.11"
+		"vitest": "^4.1.12"
 	},
 	"dependencies": {
 		"array-move": "^4.0.0",
@@ -78,6 +78,8 @@
 		"semver": "^7.5.2",
 		"shell-quote": "^1.12.0",
 		"source-map-js": "^1.2.2",
+		"undici": "^7.30.1",
+		"vite": "^8.1.6",
 		"word-wrap": "^1.2.4",
 		"yaml": "^1.10.3"
 	}
