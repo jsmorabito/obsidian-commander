@@ -45,6 +45,28 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	public constructor(plugin: CommanderPlugin) {
 		super(plugin.app, plugin);
 		this.plugin = plugin;
+		// The ribbon was reordered by dragging in Obsidian itself; redraw the list.
+		plugin.manager.leftRibbon.onOrderChange(() => this.redrawLists());
+	}
+
+	/** While true, command lists render empty so update() really rebuilds them. */
+	private blankLists = false;
+
+	/**
+	 * update() may not redraw a list whose rows are the same set in a new order,
+	 * so render the lists empty, then full again. A timeout (not
+	 * requestAnimationFrame) restores them, since rAF never fires in a hidden window.
+	 */
+	private redrawLists(): void {
+		this.blankLists = true;
+		try {
+			this.update();
+		} finally {
+			window.setTimeout(() => {
+				this.blankLists = false;
+				this.update();
+			}, 0);
+		}
 	}
 
 	public getControlValue(key: string): unknown {
@@ -142,8 +164,16 @@ export default class CommanderSettingTab extends PluginSettingTab {
 			manager: CommandManagerBase,
 			heading: string,
 			options?: CommandListOptions
-		): SettingDefinitionItem =>
-			commandListDefinition(this.plugin, manager, heading, update, options);
+		): SettingDefinitionItem => {
+			const def = commandListDefinition(
+				this.plugin,
+				manager,
+				heading,
+				update,
+				options
+			);
+			return this.blankLists ? { ...def, items: [] } : def;
+		};
 
 		return [
 			{

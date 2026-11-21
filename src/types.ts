@@ -27,6 +27,12 @@ export interface CommanderSettings {
 	editorMenu: CommandIconPair[];
 	fileMenu: CommandIconPair[];
 	leftRibbon: CommandIconPair[];
+	/**
+	 * Left ribbon button keys in screen order, saved when Commander is turned off,
+	 * with the workspace that was active. Used once, on the next enable in that
+	 * same workspace, to put our buttons back where they were.
+	 */
+	leftRibbonOnUnload?: { workspace: string; keys: string[] };
 	rightRibbon: CommandIconPair[];
 	titleBar: CommandIconPair[];
 	statusBar: CommandIconPair[];
